@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Config</class>
+ <widget class="QWidget" name="Config">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>526</width>
+    <height>298</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>526</width>
+    <height>298</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>526</width>
+    <height>298</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Configurações</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget{
+	background-color: rgb(68, 114, 196);
+}
+QLabel{
+	color: rgb(255, 255, 255);
+	background-color: rgba(0, 0, 0, 0);
+}
+
+QPushButton{
+	border-radius: 5px;
+	background-color: rgb(255, 170, 0);
+}
+
+QPushButton:hover{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 150);
+}
+
+QLineEdit{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 50);
+	color: rgb(255, 255, 255)
+}
+
+QLineEdit:focus{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 50);
+	color: rgb(255, 255, 255);
+	border: 1px solid rgb(255, 255, 255)
+}</string>
+  </property>
+  <widget class="QLineEdit" name="txt_corte_certo">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>90</y>
+     <width>491</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="cursorPosition">
+    <number>0</number>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txt_maquina">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>160</y>
+     <width>131</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="cursorPosition">
+    <number>0</number>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_configuration">
+   <property name="geometry">
+    <rect>
+     <x>161</x>
+     <y>20</y>
+     <width>201</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>22</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Configurações</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_path">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>59</y>
+     <width>120</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Caminho Corte Certo:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txt_data_base">
+   <property name="geometry">
+    <rect>
+     <x>166</x>
+     <y>160</y>
+     <width>341</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="cursorPosition">
+    <number>0</number>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="bt_search_path_3">
+   <property name="geometry">
+    <rect>
+     <x>206</x>
+     <y>250</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Salvar</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_machine">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>121</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Maquina/Responsavel:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_path_db">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>119</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Caminho Banco de Dados:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_testing_cc">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>210</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Testing CC:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_testing_db">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>210</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Testing BD:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_testing_cc_2">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>210</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_testing_db_2">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>210</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>...</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,233 @@
+from PySide6 import QtCore, QtGui, QtWidgets
+from mod_functions import PATH_ICON
+
+class Ui_Add(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(564, 240)
+        Form.setFixedSize(564, 240)
+        icon = QtGui.QIcon.fromTheme(PATH_ICON)
+        Form.setWindowIcon(icon)
+        Form.setStyleSheet("QWidget{\n"
+"    background-color: rgb(68, 114, 196);\n"
+"}\n"
+"QLabel{\n"
+"    color: rgb(255, 255, 255);\n"
+"    background-color: rgba(0, 0, 0, 0);\n"
+"}\n"
+"\n"
+"QPushButton{\n"
+"    border-radius: 5px;\n"
+"    background-color: rgb(255, 170, 0);\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    border-radius: 5px;\n"
+"    background-color: rgba(255, 170, 0, 150);\n"
+"}\n"
+"\n"
+"QLineEdit{\n"
+"    border-radius: 5px;\n"
+"    background-color: rgba(255, 170, 0, 50);\n"
+"    color: rgb(255, 255, 255)\n"
+"}\n"
+"\n"
+"QLineEdit:focus{\n"
+"    border-radius: 5px;\n"
+"    background-color: rgba(255, 170, 0, 50);\n"
+"    color: rgb(255, 255, 255);\n"
+"    border: 1px solid rgb(255, 255, 255)\n"
+"}")
+        self.lb_novo_retalho = QtWidgets.QLabel(Form)
+        self.lb_novo_retalho.setGeometry(QtCore.QRect(180, 4, 201, 41))
+        font = QtGui.QFont()
+        font.setPointSize(22)
+        self.lb_novo_retalho.setFont(font)
+        self.lb_novo_retalho.setAlignment(QtCore.Qt.AlignCenter)
+        self.lb_novo_retalho.setObjectName("lb_novo_retalho")
+        self.layoutWidget = QtWidgets.QWidget(Form)
+        self.layoutWidget.setGeometry(QtCore.QRect(20, 52, 521, 108))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.lb_cod = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_cod.setMaximumSize(QtCore.QSize(70, 16777215))
+        self.lb_cod.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_cod.setObjectName("lb_cod")
+        self.horizontalLayout.addWidget(self.lb_cod)
+        spacerItem = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.lb_descricao = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_descricao.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_descricao.setObjectName("lb_descricao")
+        self.horizontalLayout.addWidget(self.lb_descricao)
+        spacerItem1 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem1)
+        self.lb_setor = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_setor.setMaximumSize(QtCore.QSize(65, 16777215))
+        self.lb_setor.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_setor.setObjectName("lb_setor")
+        self.horizontalLayout.addWidget(self.lb_setor)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.txt_cod = QtWidgets.QLineEdit(self.layoutWidget)
+        self.txt_cod.setMaximumSize(QtCore.QSize(70, 16777215))
+        self.txt_cod.setAlignment(QtCore.Qt.AlignCenter)
+        self.txt_cod.setObjectName("txt_cod")
+        self.horizontalLayout_2.addWidget(self.txt_cod)
+        self.bt_materiais = QtWidgets.QPushButton(self.layoutWidget)
+        self.bt_materiais.setMinimumSize(QtCore.QSize(15, 0))
+        self.bt_materiais.setObjectName("bt_materiais")
+        self.horizontalLayout_2.addWidget(self.bt_materiais)
+        self.txt_descricao = QtWidgets.QLineEdit(self.layoutWidget)
+        self.txt_descricao.setEnabled(False)
+        self.txt_descricao.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.txt_descricao.setObjectName("txt_descricao")
+        self.horizontalLayout_2.addWidget(self.txt_descricao)
+        spacerItem2 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem2)
+        self.txt_setor = QtWidgets.QLineEdit(self.layoutWidget)
+        self.txt_setor.setMaximumSize(QtCore.QSize(70, 16777215))
+        self.txt_setor.setAlignment(QtCore.Qt.AlignCenter)
+        self.txt_setor.setObjectName("txt_setor")
+        self.horizontalLayout_2.addWidget(self.txt_setor)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.lb_mm = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_mm.setMaximumSize(QtCore.QSize(65, 16777215))
+        self.lb_mm.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_mm.setObjectName("lb_mm")
+        self.horizontalLayout_3.addWidget(self.lb_mm)
+        self.lb_largura = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_largura.setMaximumSize(QtCore.QSize(95, 16777215))
+        self.lb_largura.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_largura.setObjectName("lb_largura")
+        self.horizontalLayout_3.addWidget(self.lb_largura)
+        self.lb_altura = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_altura.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.lb_altura.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_altura.setObjectName("lb_altura")
+        self.horizontalLayout_3.addWidget(self.lb_altura)
+        spacerItem3 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem3)
+        self.lb_data_entrada = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_data_entrada.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_data_entrada.setObjectName("lb_data_entrada")
+        self.horizontalLayout_3.addWidget(self.lb_data_entrada)
+        spacerItem4 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem4)
+        self.lb_responsavel = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_responsavel.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_responsavel.setObjectName("lb_responsavel")
+        self.horizontalLayout_3.addWidget(self.lb_responsavel)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.txt_mm = QtWidgets.QLineEdit(self.layoutWidget)
+        self.txt_mm.setEnabled(False)
+        self.txt_mm.setMaximumSize(QtCore.QSize(50, 16777215))
+        self.txt_mm.setAlignment(QtCore.Qt.AlignCenter)
+        self.txt_mm.setObjectName("txt_mm")
+        self.horizontalLayout_4.addWidget(self.txt_mm)
+        spacerItem5 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem5)
+        self.txt_largura = QtWidgets.QLineEdit(self.layoutWidget)
+        self.txt_largura.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.txt_largura.setAlignment(QtCore.Qt.AlignCenter)
+        self.txt_largura.setObjectName("txt_largura")
+        self.horizontalLayout_4.addWidget(self.txt_largura)
+        self.lb_path_6 = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_path_6.setAlignment(QtCore.Qt.AlignCenter)
+        self.lb_path_6.setObjectName("lb_path_6")
+        self.horizontalLayout_4.addWidget(self.lb_path_6)
+        self.txt_altura = QtWidgets.QLineEdit(self.layoutWidget)
+        self.txt_altura.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.txt_altura.setAlignment(QtCore.Qt.AlignCenter)
+        self.txt_altura.setObjectName("txt_altura")
+        self.horizontalLayout_4.addWidget(self.txt_altura)
+        spacerItem6 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem6)
+        self.txt_data_entrada = QtWidgets.QLineEdit(self.layoutWidget)
+        self.txt_data_entrada.setEnabled(False)
+        self.txt_data_entrada.setMaximumSize(QtCore.QSize(130, 16777215))
+        self.txt_data_entrada.setText("")
+        self.txt_data_entrada.setAlignment(QtCore.Qt.AlignCenter)
+        self.txt_data_entrada.setObjectName("txt_data_entrada")
+        self.horizontalLayout_4.addWidget(self.txt_data_entrada)
+        spacerItem7 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem7)
+        self.txt_responsavel = QtWidgets.QLineEdit(self.layoutWidget)
+        self.txt_responsavel.setEnabled(False)
+        self.txt_responsavel.setAlignment(QtCore.Qt.AlignCenter)
+        self.txt_responsavel.setObjectName("txt_responsavel")
+        self.horizontalLayout_4.addWidget(self.txt_responsavel)
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
+        self.layoutWidget1 = QtWidgets.QWidget(Form)
+        self.layoutWidget1.setGeometry(QtCore.QRect(22, 170, 521, 26))
+        self.layoutWidget1.setObjectName("layoutWidget1")
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.layoutWidget1)
+        self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.lb_codigo_barra = QtWidgets.QLabel(self.layoutWidget1)
+        self.lb_codigo_barra.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lb_codigo_barra.setObjectName("lb_codigo_barra")
+        self.horizontalLayout_5.addWidget(self.lb_codigo_barra)
+        spacerItem8 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_5.addItem(spacerItem8)
+        self.txt_codigo_barra = QtWidgets.QLineEdit(self.layoutWidget1)
+        self.txt_codigo_barra.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.txt_codigo_barra.setText("")
+        self.txt_codigo_barra.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.txt_codigo_barra.setObjectName("txt_codigo_barra")
+        self.horizontalLayout_5.addWidget(self.txt_codigo_barra)
+        spacerItem9 = QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_5.addItem(spacerItem9)
+        self.bt_salvar = QtWidgets.QPushButton(self.layoutWidget1)
+        self.bt_salvar.setMinimumSize(QtCore.QSize(100, 0))
+        self.bt_salvar.setObjectName("bt_salvar")
+        self.bt_salvar.setEnabled(False)
+        self.horizontalLayout_5.addWidget(self.bt_salvar)
+        self.lb_message = QtWidgets.QLabel(Form)
+        self.lb_message.setGeometry(QtCore.QRect(26, 207, 511, 24))
+        self.lb_message.setAlignment(QtCore.Qt.AlignCenter)
+        self.lb_message.setObjectName("lb_message")
+
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.create_functions()
+
+    def create_functions(self):
+        pass
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Novo"))
+        self.lb_novo_retalho.setText(_translate("Form", "Novo Retalho"))
+        self.lb_cod.setText(_translate("Form", "Cod.:"))
+        self.lb_descricao.setText(_translate("Form", "Descrição:"))
+        self.lb_setor.setText(_translate("Form", "Setor:"))
+        self.bt_materiais.setText(_translate("Form", "..."))
+        self.lb_mm.setText(_translate("Form", "MM:"))
+        self.lb_largura.setText(_translate("Form", "Largura:"))
+        self.lb_altura.setText(_translate("Form", "Altura:"))
+        self.lb_data_entrada.setText(_translate("Form", "Data Entrada:"))
+        self.lb_responsavel.setText(_translate("Form", "Responsavel:"))
+        self.lb_path_6.setText(_translate("Form", "x"))
+        self.lb_codigo_barra.setText(_translate("Form", "Codigo de Barras:"))
+        self.bt_salvar.setText(_translate("Form", "Concluir"))
+        self.lb_message.setText(_translate("Form", "..."))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QWidget()
+    ui = Ui_Add()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec())

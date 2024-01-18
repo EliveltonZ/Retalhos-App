@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="pictures">
+    <file>pictures/Add_Icon.png</file>
+    <file>pictures/Conf_Icon.png</file>
+    <file>pictures/Infor_Icon.png</file>
+    <file>pictures/Remove_Icon.png</file>
+  </qresource>
+</RCC>

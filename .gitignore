@@ -1,0 +1,6 @@
+/venv
+/build
+/output
+*.qrc
+*.iss
+*.bat

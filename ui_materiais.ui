@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>539</width>
+    <height>392</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Cadastros</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#Form{
+background-color: rgb(68, 114, 196);
+}
+QLabel{
+	color: rgb(255, 255, 255);
+}
+QLineEdit{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 50);
+	color: rgb(255, 255, 255)
+}
+QLineEdit:focus{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 50);
+	color: rgb(255, 255, 255);
+	border: 1px solid rgb(255, 255, 255)
+}</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
+   <property name="spacing">
+    <number>20</number>
+   </property>
+   <property name="leftMargin">
+    <number>15</number>
+   </property>
+   <property name="rightMargin">
+    <number>15</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="lb_material">
+       <property name="font">
+        <font>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>MATERIAIS</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="txt_material"/>
+     </item>
+     <item>
+      <widget class="QTableWidget" name="tableWidget">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <column>
+        <property name="text">
+         <string>COD</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>MM</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Descrição</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

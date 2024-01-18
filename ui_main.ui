@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1270</width>
+    <height>669</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1270</width>
+    <height>669</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Retalhos</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="C:\Users\GD\Desktop\RetalhosApp\icon_retalho.PNG">
+    <normaloff>//26.172.177.73/sistema/Developer/RetalhosApp</normaloff>//26.172.177.73/sistema/Developer/RetalhosApp</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#centralwidget{
+background-color: rgb(68, 114, 196);
+}
+QPushButton#bt_add{
+	border-image: url(:/pictures/pictures/Add_Icon.png);
+}
+QPushButton#bt_removed{
+	border-image: url(:/pictures/pictures/Remove_Icon.png);
+}
+QPushButton#bt_info{
+	border-image: url(:/pictures/pictures/Infor_Icon.png);
+}
+QPushButton#bt_config{
+	border-image: url(:/pictures/pictures/Conf_Icon.png);
+}
+QPushButton:hover{
+	background-color: rgba(195, 195, 195, 100);
+	border-radius: 5px
+}
+QLabel#lb_Menu{
+	color: rgb(255, 255, 255);
+}
+QLabel#lb_desenvolvedor{
+	color: rgb(89, 150, 255);
+}
+QLineEdit{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 50);
+	color: rgb(255, 255, 255)
+}
+QLineEdit:focus{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 50);
+	color: rgb(255, 255, 255);
+	border: 1px solid rgb(255, 255, 255)
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="lb_Menu">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>30</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>CONTROLE DE RETALHOS</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="txt_filter_color">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0,0">
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="tableWidget">
+        <property name="minimumSize">
+         <size>
+          <width>1113</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="rowCount">
+         <number>0</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>ID</string>
+         </property>
+         <property name="whatsThis">
+          <string/>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+           <kerning>true</kerning>
+          </font>
+         </property>
+         <property name="background">
+          <color>
+           <red>255</red>
+           <green>255</green>
+           <blue>255</blue>
+          </color>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Setor</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>COD</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>MM</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>MDF</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Lag</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>X</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Alt</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>DataE</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Reserva</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>DataS</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Responsavel</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>30</number>
+        </property>
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="bt_add">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="bt_removed">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="bt_config">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="bt_info">
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="lb_desenvolvedor">
+      <property name="text">
+       <string>Desenvolvido por: Elivelton Gonzaga</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1270</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
+   <property name="defaultUp">
+    <bool>false</bool>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>false</bool>
+   </property>
+   <widget class="QMenu" name="menuPCP">
+    <property name="geometry">
+     <rect>
+      <x>273</x>
+      <y>127</y>
+      <width>135</width>
+      <height>94</height>
+     </rect>
+    </property>
+    <property name="tearOffEnabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string notr="true">PCP</string>
+    </property>
+    <addaction name="actionLeitor_XML"/>
+    <addaction name="actionReserva"/>
+   </widget>
+   <widget class="QMenu" name="menuOpcoes">
+    <property name="title">
+     <string>Produção</string>
+    </property>
+    <addaction name="actionMateriais"/>
+    <addaction name="actionRemover_Reservas"/>
+   </widget>
+   <addaction name="menuPCP"/>
+   <addaction name="menuOpcoes"/>
+  </widget>
+  <action name="actionLeitor_XML">
+   <property name="text">
+    <string>Leitor XML</string>
+   </property>
+  </action>
+  <action name="actionReserva">
+   <property name="text">
+    <string>Reserva</string>
+   </property>
+  </action>
+  <action name="actionMateriais">
+   <property name="text">
+    <string>Materiais</string>
+   </property>
+  </action>
+  <action name="actionRemover_Reservas">
+   <property name="text">
+    <string>Remover Reservas</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="//26.172.177.73/sistema/Developer/RetalhosApp/pictures.qrc"/>
+ </resources>
+ <connections/>
+</ui>

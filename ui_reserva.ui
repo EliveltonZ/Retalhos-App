@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>891</width>
+    <height>545</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Reservas</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#Form{
+	background-color: rgb(68, 114, 196);
+}
+
+QLabel{
+	color: rgb(255, 255, 255);
+	background-color: rgba(0, 0, 0, 0);
+}
+
+QPushButton{
+	border-radius: 5px;
+	background-color: rgb(255, 170, 0);
+}
+
+QPushButton:hover{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 150);
+}
+
+QLineEdit{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 50);
+	color: rgb(255, 255, 255)
+}
+
+QLineEdit:focus{
+	border-radius: 5px;
+	background-color: rgba(255, 170, 0, 50);
+	color: rgb(255, 255, 255);
+	border: 1px solid rgb(255, 255, 255)
+}
+QFrame#QTableWidget{
+	background: rgb(255, 255, 255);
+}</string>
+  </property>
+  <widget class="QLineEdit" name="txt_num_proj">
+   <property name="geometry">
+    <rect>
+     <x>453</x>
+     <y>90</y>
+     <width>91</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_num_proj">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>89</y>
+     <width>111</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Numero do Projeto:</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>130</y>
+     <width>851</width>
+     <height>361</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <column>
+    <property name="text">
+     <string>+</string>
+    </property>
+    <property name="background">
+     <color>
+      <red>194</red>
+      <green>194</green>
+      <blue>194</blue>
+     </color>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>id</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Setor</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Cod</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>MM</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Descrição</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Largura</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>x</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Altura</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Responsavel</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QLabel" name="lb_principal">
+   <property name="geometry">
+    <rect>
+     <x>273</x>
+     <y>30</y>
+     <width>341</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>22</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>RESERVA POR PROJETO</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="bt_reservar_retalhos">
+   <property name="geometry">
+    <rect>
+     <x>459</x>
+     <y>507</y>
+     <width>111</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reservar Retalhos</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="bt_buscar_retalhos">
+   <property name="geometry">
+    <rect>
+     <x>319</x>
+     <y>507</y>
+     <width>111</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Buscar Retalhos</string>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>295</x>
+     <y>299</y>
+     <width>301</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>0</number>
+   </property>
+   <property name="textVisible">
+    <bool>false</bool>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
