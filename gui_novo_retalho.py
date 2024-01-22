@@ -2,7 +2,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from mod_functions import PATH_ICON
 
 class Ui_Add(object):
-    def setupUi(self, Form):
+    def setupUi(self, Form) -> None:
         Form.setObjectName("Form")
         Form.resize(564, 240)
         Form.setFixedSize(564, 240)
@@ -79,6 +79,8 @@ class Ui_Add(object):
         self.txt_cod.setAlignment(QtCore.Qt.AlignCenter)
         self.txt_cod.setObjectName("txt_cod")
         self.horizontalLayout_2.addWidget(self.txt_cod)
+        self.bt = QtWidgets.QPushButton(self.layoutWidget)
+        self.bt.setVisible(False)
         self.bt_materiais = QtWidgets.QPushButton(self.layoutWidget)
         self.bt_materiais.setMinimumSize(QtCore.QSize(15, 0))
         self.bt_materiais.setObjectName("bt_materiais")

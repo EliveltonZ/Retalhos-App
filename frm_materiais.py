@@ -1,7 +1,8 @@
 from gui_materiais import Ui_Form
 from PySide6 import QtWidgets, QtCore
-from base_connection import ConnectionDB, Connection
+from base_connection import Connection, ConnectionDB
 from mod_functions import Settings
+from typing import List
 
 setting = Settings()
 path = setting.key('Directory_data_base')
@@ -25,9 +26,10 @@ class Frm_Materiais(Ui_Form):
 
     def update_table(self) -> None:
         data = self.data_table()
-        self.fill_table(data)
+        if data:
+            self.fill_table(data)
 
-    def data_table(self) -> list:
+    def data_table(self) -> List[str]:
         str_connection = type_connection.config_connection(path)
         with ConnectionDB(str_connection) as db:
             data = db.select('''SELECT tblChapas.COD, tblChapas.MM, tblChapas.MDF
@@ -42,7 +44,8 @@ class Frm_Materiais(Ui_Form):
                 item = QtWidgets.QTableWidgetItem(str(data[i][j]))
                 self.tableWidget.setItem(i, j, item)
                 if j != 2:
-                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    item.setTextAlignment(
+                        QtCore.Qt.AlignCenter)  # type: ignore
 
     def filter_table(self) -> None:
         filter_text = self.txt_material.text()

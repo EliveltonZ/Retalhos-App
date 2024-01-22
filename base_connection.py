@@ -1,28 +1,29 @@
 from __future__ import annotations
 # import sqlite3  # Use 'mysql.connector' para MySQL ou 'pyodbc' para SQL Server
+from pyodbc import Row
 import pyodbc
-from typing import Any, Tuple, Dict
-# import mysql.connector
+from typing import Tuple, Dict, List, Any
+import mysql.connector
+from mysql.connector import MySQLConnection
 from abc import ABC, abstractmethod
 
 
 class ConnectionDB:
-    def __init__(self, connection) -> None:
+
+    def __init__(self, connection: Any) -> None:
         self.connection = connection
 
     def __enter__(self) -> ConnectionDB:
         self.cursor = self.connection.cursor()
         return self
 
-    def __exit__(self, exit_value, value, traceback) -> None:
+    def __exit__(self, exit_value: None, value: None, traceback: None) -> None:
         self.cursor.close()
         self.connection.close()
 
-    def select(self, sql) -> list:
+    def select(self, sql: str) -> List[str]:
         self.cursor.execute(sql)
-        value = []
-        for row in self.cursor:
-            value.append(row)
+        value = [row for row in self.cursor]
         return value
 
     def select_item(self, sql: str) -> Any:
@@ -38,8 +39,7 @@ class ConnectionDB:
         except Exception as e:
             raise Exception(f"Erro ao executar INSERT: {e}")
 
-    def update(self, table: str, column_condition: str, value_condition: str,
-               dados: Dict[str, str]) -> None:
+    def update(self, table: str, column_condition: str, value_condition: str, dados: Dict[str, str]) -> None:
         try:
             set_clause = ", ".join([f"{k} = ?" for k in dados.keys()])
             sql = f"UPDATE {table} SET {set_clause} WHERE {column_condition} = ?"
@@ -51,21 +51,22 @@ class ConnectionDB:
 
     def delete(self, table: str, column_condition: str, value_condition: str) -> None:
         try:
-            sql = f'DELETE from {table} WHERE {column_condition} = ?'
+            sql = f'DELETE FROM {table} WHERE {column_condition} = ?'
             self.cursor.execute(sql, value_condition)
             self.connection.commit()
         except Exception as e:
-            Exception(f"Erro ao executar DELETE: {e}")
+            raise Exception(f"Erro ao executar DELETE: {e}")
+
 
 
 class IConnection(ABC):
     @abstractmethod
-    def config_connection(self, *args, **kwargs) -> Connection:
+    def config_connection(self, *args, **kwargs) -> None:
         pass
 
 
-class SQLConnection(IConnection):
-    def config_connection(self, server: str, database: str, username: str, password: str) -> Connection:
+class ConnectionSQL(IConnection):
+    def config_connection(self, server: str, database: str, username: str, password: str) -> pyodbc.Connection:
         connection_sql = pyodbc.connect(
             f"DRIVER={{SQL Server}};"
             f"SERVER={server};"
@@ -76,81 +77,45 @@ class SQLConnection(IConnection):
         return connection_sql
 
 
-class MySQLConnection(IConnection):
-    def config_connection(self, server: str, database: str, username: str, password: str) -> Connection:
+class ConnectionMySQL(IConnection):
+    def config_connection(self, server: str, database: str, username: str, password: str) -> Any | MySQLConnection:
         connection_mysql = mysql.connector.connect(
             f"Server={server};Database={database};Uid={username};Pwd={password};"
         )
         return connection_mysql
 
 
-class SQLiteConnection(IConnection):
-    def config_connection(self, file_path: str) -> Connection:
+class ConnectionSQLite(IConnection):
+    def config_connection(self, file_path: str) -> sqlite3.Connection:
         connection_sqlite = sqlite3.connect(file_path)
         return connection_sqlite
 
 
-class AccessConnection(IConnection):
-    def config_connection(self, directory: str) -> Connection:
+class ConnectionAccess(IConnection):
+    def config_connection(self, directory: str) -> pyodbc.Connection:
         connection_access = pyodbc.connect(
             f"DRIVER={{Microsoft Access Driver (*.mdb, *.accdb)}};DBQ={directory};")
         return connection_access
 
-
 class Connection:
 
     @staticmethod
-    def sql() -> SQLConnection:
-        return SQLConnection()
+    def sql() -> ConnectionSQL:
+        return ConnectionSQL()
 
     @staticmethod
-    def mysql() -> MySQLConnection:
-        return MySQLConnection()
+    def mysql() -> ConnectionMySQL:
+        return ConnectionMySQL()
 
     @staticmethod
-    def access() -> AccessConnection:
-        return AccessConnection()
+    def access() -> ConnectionAccess:
+        return ConnectionAccess()
 
     @staticmethod
-    def sqlite() -> SQLiteConnection:
-        return SQLiteConnection()
+    def sqlite() -> ConnectionSQLite:
+        return ConnectionSQLite()
 
 
 if __name__ == '__main__':
-    # Exemplo de uso
-    path = "C:\\Users\\GD\\Desktop\\BDretalhos.accdb"
-
-    # type_connection = Connection.access()
-    # string_connection = type_connection.config_connection(path)
-    # _id = '5'
-    # user = 'Elivelton'
-    # with ConnectionDB(string_connection) as connection:
-    #     connection.update('tblRetalhos', 'id', _id, {'DataEntrada': 'Null', 'Reserva':'""', 'DataReserva': 'Null', 'Responsavel': f'"{user}"'})
-
-    if False:
-        # Exemplo de SELECT com parâmetros
-        select_query = "SELECT * FROM sua_tabela WHERE coluna = ?"
-        params_select = ('valor',)
-        resultados_select = sql_instance.select(select_query, params_select)
-        print("Resultados do SELECT:", resultados_select)
-
-    if False:
-        # Exemplo de INSERT com parâmetros
-        insert_query = "INSERT INTO sua_tabela (coluna1, coluna2) VALUES (?, ?)"
-        params_insert = ('valor1', 'valor2')
-        sql_instance.insert(insert_query, params_insert)
-
-    if False:
-        # Exemplo de DELETE com parâmetros
-        delete_query = "DELETE FROM sua_tabela WHERE coluna = ?"
-        params_delete = ('valor',)
-        sql_instance.delete(delete_query, params_delete)
-
-    if False:
-        # Exemplo de UPDATE com parâmetros
-        select_query = "SELECT * FROM sua_tabela"
-        resultados_select = sql_instance.select(select_query)
-        print("Resultados do SELECT:", resultados_select)
-
-        sql_instance.update(
-            update_table, update_values, where_condition, update_params)
+    # rgb(69, 111, 223)
+    ...

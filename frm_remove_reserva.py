@@ -25,13 +25,13 @@ class Frm_RemoveReserva(Ui_RemoveReserva):
             WHERE tblRetalhos.Reserva = '{self.txt_num_proj.text()}' ORDER BY tblChapas.MDF;"""
             data = db.select(sql)
         return data
-    
+
     def search_reservations(self) -> list:
         data = self.select_table_values()
         values = []
         for i in data:
             values.append(['-', i[0], i[1], int(i[2]), i[3],
-                        i[4], i[5], i[6], i[7], i[11]])
+                           i[4], i[5], i[6], i[7], i[11]])
         return values
 
     def fill_table(self) -> None:
@@ -54,7 +54,7 @@ class Frm_RemoveReserva(Ui_RemoveReserva):
             if item_text == 'None':
                 item.setText('')
             if j != 5:
-                item.setTextAlignment(QtCore.Qt.AlignCenter)
+                item.setTextAlignment(QtCore.Qt.AlignCenter)  # type: ignore
 
     def show_empty_table_message(self) -> None:
         self.txt_num_proj.setText('')

@@ -23,7 +23,7 @@ permission = setting.key('Remover')
 class Frm_Main(Ui_MainWindow):
 
     def keyPressEvent(self, event) -> None:
-        if event.modifiers() & QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_R:  # type: ignore
+        if event.modifiers() & QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_R: # type: ignore
             self.create_files()
 
     def active_menu(self) -> None:
@@ -289,7 +289,7 @@ class Frm_Main(Ui_MainWindow):
     def disable_button(self, btn: QtWidgets.QPushButton) -> None:
         btn.setEnabled(False)
         btn.setStyleSheet(
-            "background-color: rgb(255, 40, 0); border-radius: 5px")
+            "background-color: rgb(255, 30, 0); border-radius: 5px")
 
     def check_cc(self) -> None:
         t = Testing()

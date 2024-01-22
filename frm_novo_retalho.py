@@ -1,12 +1,11 @@
-from typing import Any
 from PySide6 import QtWidgets
 from gui_novo_retalho import Ui_Add
 from datetime import datetime
 from mod_functions import Settings, Form, check_file_name, v
-from base_connection import ConnectionDB, Connection
+from base_connection import Connection, ConnectionDB
 from base_update_file import CSV
 from frm_materiais import Frm_Materiais
-
+from typing import Tuple
 
 setting = Settings()
 path = setting.key('Directory_data_base')
@@ -17,8 +16,7 @@ class Frm_NovoRetalho(Ui_Add):
 
     def create_functions(self) -> None:
         self.txt_cod.editingFinished.connect(self.result_search_cod)
-        self.txt_codigo_barra.editingFinished.connect(
-            self.result_search_barcode)
+        self.txt_codigo_barra.editingFinished.connect(self.result_search_barcode)
         self.txt_setor.textChanged.connect(self.text_upper)
         self.bt_salvar.clicked.connect(self.msg_confirm)
         self.txt_responsavel.setText(setting.key('User'))
@@ -31,10 +29,10 @@ class Frm_NovoRetalho(Ui_Add):
             self.txt_mm.setText(dados[1])
             self.lb_message.setText('...')
             self.bt_salvar.setEnabled(True)
-        except:
+        except Exception as e:
             self.exception_search_cod()
 
-    def search_cod(self) -> Any:
+    def search_cod(self) -> str:
         string_connection = type_connection.config_connection(path)
         with ConnectionDB(string_connection) as db:
             sql = f'SELECT * FROM tblChapas WHERE COD = {int(self.txt_cod.text())};'
@@ -56,8 +54,9 @@ class Frm_NovoRetalho(Ui_Add):
         return False
 
     def validation_barcode(self) -> bool:
-        len_check = self.txt_codigo_barra.text()
-        return True if len(len_check) == 21 else False
+        if len(self.txt_codigo_barra.text()) == 21:
+            return True
+        return False
 
     def result_search_barcode(self) -> None:
         if self.validation_barcode():
@@ -78,10 +77,10 @@ class Frm_NovoRetalho(Ui_Add):
 
     def load_values(self) -> None:
         cod = self.txt_codigo_barra.text()[:7]
-        larg = self.txt_codigo_barra.text()[8:14]
+        large = self.txt_codigo_barra.text()[8:14]
         alt = self.txt_codigo_barra.text()[14:21]
         self.txt_cod.setText(str(int(cod)))
-        self.txt_largura.setText(str(float(larg)))
+        self.txt_largura.setText(str(float(large)))
         self.txt_altura.setText(str(float(alt)))
 
     def text_upper(self) -> None:
@@ -107,10 +106,10 @@ class Frm_NovoRetalho(Ui_Add):
     def get_file_name(self) -> str:
         return check_file_name(str(self.txt_cod.text()))
 
-    def insert_item_into_database(self, db: ConnectionDB, table: str, columns: tuple, values: tuple) -> None:
-        db.insert(table, columns, values)
+    def insert_item_into_database(self, db: ConnectionDB, table: str, columns: Tuple[str], values: Tuple[str, str, float, float, str, str]) -> None:
+        db.insert(table, columns, values)  # type: ignore
 
-    def get_table_and_columns(self) -> tuple[str, tuple]:
+    def get_table_and_columns(self) -> Tuple:
         table = 'tblRetalhos'
         columns = (
             'Setor', 'Cod_Material', 'Largura',
@@ -118,7 +117,7 @@ class Frm_NovoRetalho(Ui_Add):
         )
         return table, columns
 
-    def get_input_values(self) -> tuple[str, str, float, float, str, str]:
+    def get_input_values(self) -> Tuple[str, str, float, float, str, str]:
         values = (
             self.txt_setor.text(),
             self.txt_cod.text(),
@@ -158,11 +157,14 @@ class Frm_NovoRetalho(Ui_Add):
             print(e)
 
     def open_form(self) -> None:
-        Form.show(Frm_Materiais())
-        self.txt_cod.setText(v[0])
-        self.txt_cod.setFocus()
-        self.txt_descricao.setText('')
-        self.txt_mm.setText('')
+        try:
+            Form.show(Frm_Materiais())
+            self.txt_cod.setText(v[0])
+            self.txt_cod.setFocus()
+            self.txt_descricao.setText('')
+            self.txt_mm.setText('')
+        except:
+            ...
 
 
 if __name__ == "__main__":
@@ -173,3 +175,4 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec())
+

@@ -1,5 +1,6 @@
 from os.path import isfile
 from csv import reader
+from typing import Any, List
 from mod_functions import Settings
 
 setting = Settings('Settings.json')
@@ -17,14 +18,15 @@ class CheckedOrder:
             return False
 
     # função para ler o arquivo de retalhos na pasta
-    def read_lines(self, file_name: str) -> list[list[str]] | None:
+    def read_lines(self, file_name: str) -> List[List[str]]:
         if self.checked_file(file_name) is True:
             with open(self.directory + file_name, 'r', newline='') as file:
                 _reader = reader(file, delimiter=' ')
                 rows = list(_reader)
             return rows
+        return []
 
-    def search_date(self, _list: list, item_position: int) -> list:
+    def search_date(self, _list: List[List[str]], item_position: int) -> List[Any]:
         list_colors = []
         date = _list
         for row in date:

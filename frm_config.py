@@ -25,7 +25,7 @@ class Frm_Config(Ui_Config):
         directory, cut_app, data_base = self.data_json(testing)
         bool_cc, bool_db = self.check_configuration(
             testing, directory, cut_app, data_base)
-        check_test_db, check_test_cc = self.values_test(bool_cc, bool_db)
+        check_test_cc, check_test_db = self.values_test(bool_cc, bool_db)
         self.test_db = check_test_db
         self.test_cc = check_test_cc
 
@@ -34,9 +34,7 @@ class Frm_Config(Ui_Config):
         check_test_db = self.text_line_edit(bool_db)
         return check_test_cc, check_test_db
 
-    def check_configuration(
-            self, testing: Testing, directory: str, cut_app: str,
-            data_base: str) -> tuple[bool, bool]:
+    def check_configuration(self, testing: Testing, directory: str, cut_app: str, data_base: str) -> tuple[bool, bool]:
         bool_cc = testing.check_cut_app(directory, cut_app)
         bool_db = testing.file_test(data_base)
         return bool_cc, bool_db

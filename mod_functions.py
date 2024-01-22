@@ -18,7 +18,7 @@ class ReaderXml:
         self.organized_xml()
         self.dom = xml.dom.minidom.parseString(self.date)
 
-    def organized_xml(self) -> str:
+    def organized_xml(self) -> str | None:
         with open(self.directory, 'r', encoding='utf-8') as file:
             xml_string = file.read()
         dom = xml.dom.minidom.parseString(xml_string)
