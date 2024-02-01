@@ -15,14 +15,16 @@ class CSV:
 
     # função que abre o arquivo e deleta a linha na qual se enquadra na condição e reescreve o arquivo
     @staticmethod
-    def del_row(path: str, file_name: str,  condition: str, lines: list = list()) -> None:
+    def del_row(path: str, file_name: str,  condition: str) -> None:
+        lines: list = list()
         with open(path + file_name, 'r', newline='') as csv_file:
             _reader = reader(csv_file, delimiter=',')
             for line in _reader:
-                if line[6] ==  condition:
+                if line[6] == condition:
                     continue 
                 lines.append(line)
         
         with open(path + file_name, 'w', newline='') as csv_file:
             escritor = writer(csv_file, delimiter=',')
             escritor.writerows(lines)
+

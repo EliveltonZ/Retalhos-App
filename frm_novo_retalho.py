@@ -9,6 +9,7 @@ from typing import Tuple
 
 setting = Settings()
 path = setting.key('Directory_data_base')
+password = setting.key('Password')
 type_connection = Connection.access()
 
 
@@ -22,6 +23,13 @@ class Frm_NovoRetalho(Ui_Add):
         self.txt_responsavel.setText(setting.key('User'))
         self.bt_materiais.clicked.connect(self.open_form)
 
+    def connection(self) -> Connection:
+        if password:
+            connection = type_connection.config_connection(path, password)
+            return connection
+        connection = type_connection.config_connection(path)
+        return connection
+    
     def result_search_cod(self) -> None:
         try:
             dados = self.search_cod()
@@ -33,7 +41,7 @@ class Frm_NovoRetalho(Ui_Add):
             self.exception_search_cod()
 
     def search_cod(self) -> str:
-        string_connection = type_connection.config_connection(path)
+        string_connection = self.connection()
         with ConnectionDB(string_connection) as db:
             sql = f'SELECT * FROM tblChapas WHERE COD = {int(self.txt_cod.text())};'
             dados = db.select_item(sql)
@@ -90,7 +98,7 @@ class Frm_NovoRetalho(Ui_Add):
     def insert_item(self) -> None:
         table, columns = self.get_table_and_columns()
         values = self.get_input_values()
-        string_connection = type_connection.config_connection(path)
+        string_connection = self.connection()
         with ConnectionDB(string_connection) as db:
             self.insert_item_into_database(db, table, columns, values)
             last_id = self.get_last_id(db)
@@ -106,8 +114,8 @@ class Frm_NovoRetalho(Ui_Add):
     def get_file_name(self) -> str:
         return check_file_name(str(self.txt_cod.text()))
 
-    def insert_item_into_database(self, db: ConnectionDB, table: str, columns: Tuple[str], values: Tuple[str, str, float, float, str, str]) -> None:
-        db.insert(table, columns, values)  # type: ignore
+    def insert_item_into_database(self, db: ConnectionDB, table: str, columns: Tuple[str], values: Tuple) -> None:
+        db.insert(table, columns, values) 
 
     def get_table_and_columns(self) -> Tuple:
         table = 'tblRetalhos'
@@ -147,6 +155,7 @@ class Frm_NovoRetalho(Ui_Add):
                 self.lb_message.setText('...')
                 if result:
                     now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+                    print(now)
                     self.txt_data_entrada.setText(now)
                     self.insert_item()
                     title = "Sucesso"

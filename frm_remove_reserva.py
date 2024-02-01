@@ -78,7 +78,7 @@ class Frm_RemoveReserva(Ui_RemoveReserva):
             message = "Operação Concluída !!!"
             Form.form_information(title, message)
 
-    def remove_item(self):
+    def remove_item(self) -> None:
         if self.tableWidget.currentItem() is not None:
             for i in range(self.tableWidget.rowCount()):
                 _id = self.tableWidget.item(i, 1).text()

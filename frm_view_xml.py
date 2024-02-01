@@ -220,15 +220,15 @@ class Frm_View_Xml(View_Xml):
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
 
-    def clicked_item(self, item: QtWidgets.QTableWidget) -> None:
-        if item.column() == 0:  # type: ignore
-            value_first_column = item.text()  # type: ignore
+    def clicked_item(self, item: QtWidgets.QTableWidgetItem) -> None:
+        if item.column() == 0:
+            value_first_column = item.text()
             if value_first_column == '+':
                 new_item = QtWidgets.QTableWidgetItem('')
             else:
                 new_item = QtWidgets.QTableWidgetItem('+')
             new_item.setTextAlignment(QtCore.Qt.AlignCenter)  # type: ignore
-            self.tableWidget.setItem(item.row(), 0, new_item)  # type: ignore
+            self.tableWidget.setItem(item.row(), 0, new_item)
 
 
 if __name__ == "__main__":

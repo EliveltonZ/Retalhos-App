@@ -9,6 +9,7 @@ from typing import List, Any
 
 setting = Settings()
 path = setting.key('Directory_data_base')
+password = setting.key('Password')
 type_connection = Connection.access()
 
 
@@ -22,13 +23,20 @@ class Frm_Reserva(Ui_Form):
         self.tableWidget.itemClicked.connect(self.clicked_item)
         self.bt_reservar_retalhos.clicked.connect(self.confirm_reserve)
 
+    def connection(self) -> Connection:
+        if password:
+            connection = type_connection.config_connection(path, password)
+            return connection
+        connection = type_connection.config_connection(path)
+        return connection
+    
     def list_of_found(self, sql) -> List[str]:
-        string_connection = type_connection.config_connection(path)
+        string_connection = self.connection()
         with ConnectionDB(string_connection) as db:
             _sql = f'''SELECT '+' AS D, tblRetalhos.id, tblRetalhos.Setor, tblRetalhos.Cod_Material, tblChapas.MM, 
                         tblChapas.MDF, tblRetalhos.Largura, 'x' AS X, tblRetalhos.Altura, tblRetalhos.Reserva
                         FROM tblChapas INNER JOIN tblRetalhos ON tblChapas.COD = tblRetalhos.Cod_Material
-                        WHERE ({sql}) ORDER BY tblChapas.MDF;'''
+                        WHERE ({sql}) ORDER BY tblChapas.MDF, tblRetalhos.Cod_Material, tblRetalhos.id;'''
             data = db.select(_sql)
         return data
 
@@ -118,7 +126,7 @@ class Frm_Reserva(Ui_Form):
         self.create_workbook(_list)
 
     def update_data_table(self, table: str, condition: str, value_condition: str, column: str) -> None:
-        string_connection = type_connection.config_connection(path)
+        string_connection = self.connection()
         with ConnectionDB(string_connection) as db:
             db.update(
                 table, condition, value_condition, {f"{column}": f"{self.txt_num_proj.text()}"})
@@ -139,7 +147,10 @@ class Frm_Reserva(Ui_Form):
 
     def del_row(self, file_name,  condition) -> None:
         path = setting.key('Directory_cc') + setting.key('ret')
-        CSV.del_row(path, file_name, condition)
+        try:
+            CSV.del_row(path, file_name, condition)
+        except:
+            CSV.create_file(path, file_name)
 
     def fill_table(self) -> None:
         self.tableWidget.setRowCount(len(self.result))

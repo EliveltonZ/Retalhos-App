@@ -6,6 +6,7 @@ from typing import List
 
 setting = Settings()
 path = setting.key('Directory_data_base')
+password = setting.key('Password')
 type_connection = Connection.access()
 
 
@@ -17,6 +18,13 @@ class Frm_Materiais(Ui_Form):
         self.tableWidget.doubleClicked.connect(self.catch_value)
         self.update_table()
 
+    def connection(self) -> Connection:
+        if password:
+            connection = type_connection.config_connection(path, password)
+            return connection
+        connection = type_connection.config_connection(path)
+        return connection
+    
     def catch_value(self) -> None:
         item = self.tableWidget.item(self.tableWidget.currentRow(), 0).text()
         if item:
@@ -30,7 +38,7 @@ class Frm_Materiais(Ui_Form):
             self.fill_table(data)
 
     def data_table(self) -> List[str]:
-        str_connection = type_connection.config_connection(path)
+        str_connection = self.connection()
         with ConnectionDB(str_connection) as db:
             data = db.select('''SELECT tblChapas.COD, tblChapas.MM, tblChapas.MDF
                                 FROM tblChapas ORDER BY tblChapas.MDF;

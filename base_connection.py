@@ -1,10 +1,9 @@
 from __future__ import annotations
 # import sqlite3  # Use 'mysql.connector' para MySQL ou 'pyodbc' para SQL Server
-from pyodbc import Row
 import pyodbc
 from typing import Tuple, Dict, List, Any
-import mysql.connector
-from mysql.connector import MySQLConnection
+# import mysql.connector
+# from mysql.connector import MySQLConnection
 from abc import ABC, abstractmethod
 
 
@@ -31,7 +30,7 @@ class ConnectionDB:
         result = value.fetchone()
         return result
 
-    def insert(self, table: str, column: Tuple[str], values: Tuple[str]) -> None:
+    def insert(self, table: str, column: Tuple[str], values: Tuple) -> None:
         try:
             sql = f"INSERT INTO {table} ({', '.join(column)}) VALUES ({', '.join(['?']*len(column))})"
             self.cursor.execute(sql, values)
@@ -58,14 +57,13 @@ class ConnectionDB:
             raise Exception(f"Erro ao executar DELETE: {e}")
 
 
-
 class IConnection(ABC):
     @abstractmethod
     def config_connection(self, *args, **kwargs) -> None:
         pass
 
 
-class ConnectionSQL(IConnection):
+class SQLConnection(IConnection):
     def config_connection(self, server: str, database: str, username: str, password: str) -> pyodbc.Connection:
         connection_sql = pyodbc.connect(
             f"DRIVER={{SQL Server}};"
@@ -77,7 +75,7 @@ class ConnectionSQL(IConnection):
         return connection_sql
 
 
-class ConnectionMySQL(IConnection):
+class MySQLConnection(IConnection):
     def config_connection(self, server: str, database: str, username: str, password: str) -> Any | MySQLConnection:
         connection_mysql = mysql.connector.connect(
             f"Server={server};Database={database};Uid={username};Pwd={password};"
@@ -85,35 +83,40 @@ class ConnectionMySQL(IConnection):
         return connection_mysql
 
 
-class ConnectionSQLite(IConnection):
+class SQLiteConnection(IConnection):
     def config_connection(self, file_path: str) -> sqlite3.Connection:
         connection_sqlite = sqlite3.connect(file_path)
         return connection_sqlite
 
 
-class ConnectionAccess(IConnection):
-    def config_connection(self, directory: str) -> pyodbc.Connection:
-        connection_access = pyodbc.connect(
-            f"DRIVER={{Microsoft Access Driver (*.mdb, *.accdb)}};DBQ={directory};")
+class AccessConnection(IConnection):
+    def config_connection(self, directory: str, password: str | None = None) -> Connection:
+        if password:
+            connection_access = pyodbc.connect(
+                f"DRIVER={{Microsoft Access Driver (*.mdb, *.accdb)}};DBQ={directory};PWD={password}")
+        else:
+            connection_access = pyodbc.connect(
+                f"DRIVER={{Microsoft Access Driver (*.mdb, *.accdb)}};DBQ={directory};")
         return connection_access
+
 
 class Connection:
 
     @staticmethod
-    def sql() -> ConnectionSQL:
-        return ConnectionSQL()
+    def sql() -> SQLConnection:
+        return SQLConnection()
 
     @staticmethod
-    def mysql() -> ConnectionMySQL:
-        return ConnectionMySQL()
+    def mysql() -> MySQLConnection:
+        return MySQLConnection()
 
     @staticmethod
-    def access() -> ConnectionAccess:
-        return ConnectionAccess()
+    def access() -> AccessConnection:
+        return AccessConnection()
 
     @staticmethod
-    def sqlite() -> ConnectionSQLite:
-        return ConnectionSQLite()
+    def sqlite() -> SQLiteConnection:
+        return SQLiteConnection()
 
 
 if __name__ == '__main__':

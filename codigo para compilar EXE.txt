@@ -1,1 +1,1 @@
-pyinstaller --name="Retalhos" --noconsole --icon='icon_retalho.ico' --add-data "icon_retalho.ico;." frm_main.py 
+pyinstaller --name="Retalhos" --noconsole --noconfirm --icon='icon_retalho.ico' --add-data "icon_retalho.ico;." frm_main.py 

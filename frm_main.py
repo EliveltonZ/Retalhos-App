@@ -16,9 +16,9 @@ from typing import Tuple
 
 setting = Settings()
 path = setting.key('Directory_data_base')
-type_connection = Connection.access()
 permission = setting.key('Remover')
-
+password = setting.key('Password')
+type_connection = Connection.access()
 
 class Frm_Main(Ui_MainWindow):
 
@@ -55,9 +55,16 @@ class Frm_Main(Ui_MainWindow):
         text = self.txt_filter_color.text()
         self.txt_filter_color.setText(text.upper())
 
+    def connection(self) -> Connection:
+        if password:
+            connection = type_connection.config_connection(path, password)
+            return connection
+        connection = type_connection.config_connection(path)
+        return connection
+
     def del_row_table(self) -> None:
         value = self.get_id_value()
-        str_connection = type_connection.config_connection(path)
+        str_connection = self.connection()
         with ConnectionDB(str_connection) as db:
             db.delete('tblRetalhos', 'id', value)
         self.update_table()
@@ -112,12 +119,12 @@ class Frm_Main(Ui_MainWindow):
                 lines.append(_id)
             elif i == 10:
                 lines.append('')
-            CSV.write(path, name, [lines])
+        CSV.write(path, name, [lines])
 
     def remove_reserve_db(self, _id) -> None:
-        str_connection = type_connection.config_connection(path)
         now = datetime.now().strftime('%d/%m/%Y %H:%M')
         user = setting.key('User')
+        str_connection = self.connection()
         with ConnectionDB(str_connection) as conn:
             conn.update('tblRetalhos', 'id', _id, {
                         "Reserva": "", "Responsavel": f"{user}", "DataReserva": "", "DataEntrada": f"{now}"})
@@ -204,13 +211,14 @@ class Frm_Main(Ui_MainWindow):
         Form.show(Frm_RemoveReserva())
 
     def data_table(self) -> list:
-        str_connection = type_connection.config_connection(path)
+        str_connection = self.connection()
         with ConnectionDB(str_connection) as db:
             data = db.select('''SELECT tblRetalhos.id, tblRetalhos.Setor, tblRetalhos.Cod_Material, 
             tblChapas.MM, tblChapas.MDF, tblRetalhos.Largura,'x' AS X, tblRetalhos.Altura, 
             tblRetalhos.DataEntrada, tblRetalhos.Reserva, tblRetalhos.DataReserva, 
             tblRetalhos.Responsavel 
-            FROM tblChapas INNER JOIN tblRetalhos ON tblChapas.COD = tblRetalhos.Cod_Material ORDER BY tblChapas.MDF;''')
+            FROM tblChapas INNER JOIN tblRetalhos ON tblChapas.COD = tblRetalhos.Cod_Material
+            ORDER BY tblChapas.MDF, tblRetalhos.Cod_Material, tblRetalhos.id;''')
         return data
 
     def update_table(self) -> None:
@@ -219,6 +227,7 @@ class Frm_Main(Ui_MainWindow):
             self.tableWidget.setRowCount(len(data))
             for i in range(len(data)):
                 test = False
+                color = QtGui.QColor(0, 0, 0)
 
                 for j in range(12):
                     item = QtWidgets.QTableWidgetItem(
@@ -237,26 +246,29 @@ class Frm_Main(Ui_MainWindow):
                             QtCore.Qt.AlignCenter)  # type: ignore
 
                     if j == 7 and item.text() == '1840.0':
-                        color = QtGui.QBrush(QtGui.QColor(219, 105, 19))
+                        color = QtGui.QColor(219, 105, 19)
                         test = True
 
                     if j == 9 and item.text() != '':
-                        color = QtGui.QBrush(QtGui.QColor(255, 255, 0))
+                        color = QtGui.QColor(255, 255, 0)
                         test = True
 
-                    if j == 8 or j == 10:
+                    if j == 8:
                         datetime_str = item.text()
                         if datetime_str != '':
-                            item.setText(datetime_str)
+                            date = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+                            format_date = date.strftime('%d/%m/%Y %H:%M:%S')
+                            item.setText(format_date)
 
-                if test is True:
+                if test:
                     for k in range(12):
                         current_item = self.tableWidget.item(i, k)
                         if current_item is not None:
-                            current_item.setBackground(color)  # type: ignore
+                            current_item.setBackground(color)
 
                 else:
                     test = False
+
         except Exception:
             self.txt_filter_color.setText(
                 'Faça as configurações e após isso reinicie a aplicação')
