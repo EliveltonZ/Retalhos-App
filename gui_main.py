@@ -1,50 +1,52 @@
+import pictures_rc
 from PySide6 import QtCore, QtGui, QtWidgets
 from mod_functions import PATH_ICON
+
 
 class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1270, 669)
-        MainWindow.setMinimumSize(QtCore.QSize(1270, 669))
+        MainWindow.resize(1200, 669)
+        MainWindow.setMinimumSize(QtCore.QSize(1200, 669))
         icon = QtGui.QIcon.fromTheme(PATH_ICON)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("QWidget#centralwidget{\n"
-"background-color: rgb(68, 114, 196);\n"
-"}\n"
-"QPushButton#bt_add{\n"
-"    border-image: url(:/pictures/pictures/Add_Icon.png);\n"
-"}\n"
-"QPushButton#bt_removed{\n"
-"    border-image: url(:/pictures/pictures/Remove_Icon.png);\n"
-"}\n"
-"QPushButton#bt_info{\n"
-"    border-image: url(:/pictures/pictures/Infor_Icon.png);\n"
-"}\n"
-"QPushButton#bt_config{\n"
-"    border-image: url(:/pictures/pictures/Conf_Icon.png);\n"
-"}\n"
-"QPushButton:hover{\n"
-"    background-color: rgba(195, 195, 195, 100);\n"
-"    border-radius: 5px\n"
-"}\n"
-"QLabel#lb_Menu{\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"QLabel#lb_desenvolvedor{\n"
-"    color: rgb(89, 150, 255);\n"
-"}\n"
-"QLineEdit{\n"
-"    border-radius: 5px;\n"
-"    background-color: rgba(255, 170, 0, 50);\n"
-"    color: rgb(255, 255, 255)\n"
-"}\n"
-"QLineEdit:focus{\n"
-"    border-radius: 5px;\n"
-"    background-color: rgba(255, 170, 0, 50);\n"
-"    color: rgb(255, 255, 255);\n"
-"    border: 1px solid rgb(255, 255, 255)\n"
-"}")
+                                 "background-color: rgb(68, 114, 196);\n"
+                                 "}\n"
+                                 "QPushButton#bt_add{\n"
+                                 "    border-image: url(:/pictures/pictures/Add_Icon.png);\n"
+                                 "}\n"
+                                 "QPushButton#bt_removed{\n"
+                                 "    border-image: url(:/pictures/pictures/Remove_Icon.png);\n"
+                                 "}\n"
+                                 "QPushButton#bt_info{\n"
+                                 "    border-image: url(:/pictures/pictures/Infor_Icon.png);\n"
+                                 "}\n"
+                                 "QPushButton#bt_config{\n"
+                                 "    border-image: url(:/pictures/pictures/Conf_Icon.png);\n"
+                                 "}\n"
+                                 "QPushButton:hover{\n"
+                                 "    background-color: rgba(195, 195, 195, 100);\n"
+                                 "    border-radius: 5px\n"
+                                 "}\n"
+                                 "QLabel#lb_Menu{\n"
+                                 "    color: rgb(255, 255, 255);\n"
+                                 "}\n"
+                                 "QLabel#lb_desenvolvedor{\n"
+                                 "    color: rgb(89, 150, 255);\n"
+                                 "}\n"
+                                 "QLineEdit{\n"
+                                 "    border-radius: 5px;\n"
+                                 "    background-color: rgba(255, 170, 0, 50);\n"
+                                 "    color: rgb(255, 255, 255)\n"
+                                 "}\n"
+                                 "QLineEdit:focus{\n"
+                                 "    border-radius: 5px;\n"
+                                 "    background-color: rgba(255, 170, 0, 50);\n"
+                                 "    color: rgb(255, 255, 255);\n"
+                                 "    border: 1px solid rgb(255, 255, 255)\n"
+                                 "}")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -52,7 +54,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.lb_Menu = QtWidgets.QLabel(self.centralwidget)
         self.lb_Menu.setMinimumSize(QtCore.QSize(0, 100))
@@ -64,32 +67,40 @@ class Ui_MainWindow(object):
         self.lb_Menu.setFont(font)
         self.lb_Menu.setObjectName("lb_Menu")
         self.horizontalLayout.addWidget(self.lb_Menu)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem2)
         self.txt_filter_color = QtWidgets.QLineEdit(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.txt_filter_color.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.txt_filter_color.sizePolicy().hasHeightForWidth())
         self.txt_filter_color.setSizePolicy(sizePolicy)
         self.txt_filter_color.setObjectName("txt_filter_color")
         self.horizontalLayout_4.addWidget(self.txt_filter_color)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem3)
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem4)
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setMinimumSize(QtCore.QSize(1113, 0))
-        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.setMinimumSize(QtCore.QSize(1050, 0))
+        self.tableWidget.setEditTriggers(
+            QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.setRowCount(0)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(12)
@@ -123,7 +134,8 @@ class Ui_MainWindow(object):
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(11, item)
         self.horizontalLayout_2.addWidget(self.tableWidget)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem5)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setContentsMargins(10, 10, 10, -1)
@@ -149,7 +161,8 @@ class Ui_MainWindow(object):
         self.bt_info.setText("")
         self.bt_info.setObjectName("bt_info")
         self.verticalLayout.addWidget(self.bt_info)
-        spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem6 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem6)
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
@@ -159,10 +172,12 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 1270, 22))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.menuBar.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.menuBar.sizePolicy().hasHeightForWidth())
         self.menuBar.setSizePolicy(sizePolicy)
         self.menuBar.setFocusPolicy(QtCore.Qt.NoFocus)
         self.menuBar.setDefaultUp(False)
@@ -195,7 +210,8 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.create_functions()
         self.update_table()
-    
+        MainWindow.showMaximized()
+
     def create_functions(self):
         ...
 
@@ -204,7 +220,7 @@ class Ui_MainWindow(object):
 
     def keyPressEvent(self, event):
         ...
-    
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Retalhos"))
@@ -233,13 +249,14 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Data Saída"))
         item = self.tableWidget.horizontalHeaderItem(11)
         item.setText(_translate("MainWindow", "Responsavel"))
-        self.lb_desenvolvedor.setText(_translate("MainWindow", "Desenvolvido por: Elivelton Gonzaga"))
+        self.lb_desenvolvedor.setText(_translate(
+            "MainWindow", "Desenvolvido por: Elivelton Gonzaga"))
         self.menuOpcoes.setTitle(_translate("MainWindow", "Produção"))
         self.actionLeitor_XML.setText(_translate("MainWindow", "Leitor XML"))
         self.actionReserva.setText(_translate("MainWindow", "Reservar"))
         self.actionMateriais.setText(_translate("MainWindow", "Materiais"))
-        self.actionRemover_Reservas.setText(_translate("MainWindow", "Remover Reservas"))
-import pictures_rc
+        self.actionRemover_Reservas.setText(
+            _translate("MainWindow", "Remover Reservas"))
 
 
 if __name__ == "__main__":

@@ -20,10 +20,11 @@ permission = setting.key('Remover')
 password = setting.key('Password')
 type_connection = Connection.access()
 
+
 class Frm_Main(Ui_MainWindow):
 
     def keyPressEvent(self, event) -> None:
-        if event.modifiers() & QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_R: # type: ignore
+        if event.modifiers() & QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_R:  # type: ignore
             self.create_files()
 
     def active_menu(self) -> None:
@@ -256,7 +257,8 @@ class Frm_Main(Ui_MainWindow):
                     if j == 8:
                         datetime_str = item.text()
                         if datetime_str != '':
-                            date = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+                            date = datetime.strptime(
+                                datetime_str, '%Y-%m-%d %H:%M:%S')
                             format_date = date.strftime('%d/%m/%Y %H:%M:%S')
                             item.setText(format_date)
 
@@ -315,6 +317,7 @@ class Frm_Main(Ui_MainWindow):
     def set_empty_text(self, text) -> None:
         self.txt_filter_color.setText('')
         self.txt_filter_color.setText(text)
+
 
 if __name__ == "__main__":
     import sys

@@ -117,7 +117,8 @@ class Frm_NovoRetalho(Ui_Add):
     def get_file_name(self) -> str:
         return check_file_name(str(self.txt_cod.text()))
 
-    def insert_item_into_database(self, db: ConnectionDB, table: str, columns: Tuple[str], values: Tuple) -> None:
+    def insert_item_into_database(self, db: ConnectionDB, table: str,
+                                  columns: Tuple[str], values: Tuple) -> None:
         db.insert(table, columns, values)
 
     def get_table_and_columns(self) -> Tuple:
@@ -165,9 +166,8 @@ class Frm_NovoRetalho(Ui_Add):
                         title = "Sucesso"
                         message = "Retalho Lançado com Sucesso !!!"
                         Form.form_information(title, message)
-        except Exception as e:
+        except Exception:
             self.lb_message.setText('Dimensões de Retalho inválidos ...')
-            print(e)
 
     def check_limit(self) -> bool:
         limit_width = float(setting.key('Largura'))
@@ -190,21 +190,19 @@ class Frm_NovoRetalho(Ui_Add):
         self.config_line_edit(self.txt_altura, '', 'white')
 
     def config_line_edit(self, line_edit: QtWidgets.QLineEdit, message: str,
-                         color: str = 'red') -> None:
+                         color: str = 'rgb(255, 119, 121)') -> None:
         self.lb_message.setText(message)
         line_edit.setStyleSheet(f'color: {color}')
         value = str(float(line_edit.text()))
         line_edit.setText(value)
 
     def open_form(self) -> None:
-        try:
-            Form.show(Frm_Materiais())
+        Form.show(Frm_Materiais())
+        if v:
             self.txt_cod.setText(v[0])
-            self.txt_cod.setFocus()
-            self.txt_descricao.setText('')
-            self.txt_mm.setText('')
-        except:
-            ...
+        self.txt_cod.setFocus()
+        self.txt_descricao.setText('')
+        self.txt_mm.setText('')
 
 
 if __name__ == "__main__":
