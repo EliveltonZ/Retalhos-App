@@ -1,5 +1,5 @@
 {
-  "Directory_data_base": "C:\\Users\\GD\\Desktop\\BDretalhos.accdb",
+  "Directory_data_base": "\\\\26.172.177.73\\sistema\\BDretalhos.accdb",
   "Directory_cc": "C:\\corte_certo_plus\\",
   "ret": "CHP\\",
   "mat": "MAT\\",
@@ -8,5 +8,7 @@
   "User": "TITANIUM",
   "Menu": "ativado",
   "Remover": "ativado",
-  "Password": 1
+  "Password": 1,
+  "Largura": 2740,
+  "Altura": 1840
 }

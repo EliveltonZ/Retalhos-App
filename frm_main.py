@@ -31,7 +31,7 @@ class Frm_Main(Ui_MainWindow):
         self.menuPCP.setEnabled(menu_enabled)
 
     def config_table(self) -> None:
-        column_widths = [50, 40, 50, 20, 327, 60, 30, 60, 120, 60, 120]
+        column_widths = [50, 40, 50, 20, 290, 50, 10, 50, 120, 60, 120]
         for col, width in enumerate(column_widths):
             self.tableWidget.setColumnWidth(col, width)
 
@@ -315,7 +315,6 @@ class Frm_Main(Ui_MainWindow):
     def set_empty_text(self, text) -> None:
         self.txt_filter_color.setText('')
         self.txt_filter_color.setText(text)
-
 
 if __name__ == "__main__":
     import sys

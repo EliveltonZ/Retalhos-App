@@ -79,13 +79,12 @@ class Frm_RemoveReserva(Ui_RemoveReserva):
             Form.form_information(title, message)
 
     def remove_item(self) -> None:
-        if self.tableWidget.currentItem() is not None:
-            for i in range(self.tableWidget.rowCount()):
-                _id = self.tableWidget.item(i, 1).text()
-                string_connection = type_connection.config_connection(db_path)
-                with ConnectionDB(string_connection) as db:
-                    db.delete('tblRetalhos', 'id', _id)
-
+        for i in range(self.tableWidget.rowCount()):
+            _id = self.tableWidget.item(i, 1).text()
+            string_connection = type_connection.config_connection(db_path)
+            with ConnectionDB(string_connection) as db:
+                db.delete('tblRetalhos', 'id', _id)
+        self.clear_table()
 
 if __name__ == "__main__":
     import sys

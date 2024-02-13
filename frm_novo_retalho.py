@@ -17,11 +17,14 @@ class Frm_NovoRetalho(Ui_Add):
 
     def create_functions(self) -> None:
         self.txt_cod.editingFinished.connect(self.result_search_cod)
-        self.txt_codigo_barra.editingFinished.connect(self.result_search_barcode)
+        self.txt_codigo_barra.editingFinished.connect(
+            self.result_search_barcode)
         self.txt_setor.textChanged.connect(self.text_upper)
         self.bt_salvar.clicked.connect(self.msg_confirm)
         self.txt_responsavel.setText(setting.key('User'))
         self.bt_materiais.clicked.connect(self.open_form)
+        self.txt_largura.editingFinished.connect(self.end_editing_width)
+        self.txt_altura.editingFinished.connect(self.end_editing_height)
 
     def connection(self) -> Connection:
         if password:
@@ -29,7 +32,7 @@ class Frm_NovoRetalho(Ui_Add):
             return connection
         connection = type_connection.config_connection(path)
         return connection
-    
+
     def result_search_cod(self) -> None:
         try:
             dados = self.search_cod()
@@ -37,7 +40,7 @@ class Frm_NovoRetalho(Ui_Add):
             self.txt_mm.setText(dados[1])
             self.lb_message.setText('...')
             self.bt_salvar.setEnabled(True)
-        except Exception as e:
+        except Exception:
             self.exception_search_cod()
 
     def search_cod(self) -> str:
@@ -115,7 +118,7 @@ class Frm_NovoRetalho(Ui_Add):
         return check_file_name(str(self.txt_cod.text()))
 
     def insert_item_into_database(self, db: ConnectionDB, table: str, columns: Tuple[str], values: Tuple) -> None:
-        db.insert(table, columns, values) 
+        db.insert(table, columns, values)
 
     def get_table_and_columns(self) -> Tuple:
         table = 'tblRetalhos'
@@ -148,22 +151,50 @@ class Frm_NovoRetalho(Ui_Add):
 
     def msg_confirm(self) -> None:
         try:
-            if self.is_floating() == True:
-                title = "Retalhos"
-                message = "Deseja Lançar novo retalho?"
-                result = Form.form_question(title, message)
-                self.lb_message.setText('...')
-                if result:
-                    now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-                    print(now)
-                    self.txt_data_entrada.setText(now)
-                    self.insert_item()
-                    title = "Sucesso"
-                    message = "Retalho Lançado com Sucesso !!!"
-                    Form.form_information(title, message)
+            if self.is_floating():
+                if self.check_limit():
+                    title = "Retalhos"
+                    message = "Deseja Lançar novo retalho?"
+                    result = Form.form_question(title, message)
+                    self.lb_message.setText('...')
+                    if result:
+                        now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+                        print(now)
+                        self.txt_data_entrada.setText(now)
+                        self.insert_item()
+                        title = "Sucesso"
+                        message = "Retalho Lançado com Sucesso !!!"
+                        Form.form_information(title, message)
         except Exception as e:
             self.lb_message.setText('Dimensões de Retalho inválidos ...')
             print(e)
+
+    def check_limit(self) -> bool:
+        limit_width = float(setting.key('Largura'))
+        limit_height = float(setting.key('Altura'))
+        if float(self.txt_largura.text()) > limit_width:
+            message = f'Largura fora do limite permitido de {limit_width}'
+            self.config_line_edit(self.txt_largura, message)
+            return False
+        elif float(self.txt_altura.text()) > limit_height:
+            message = f'Altura fora do limite permitido de {limit_height}'
+            self.config_line_edit(self.txt_altura, message)
+            return False
+        else:
+            return True
+
+    def end_editing_width(self) -> None:
+        self.config_line_edit(self.txt_largura, '', 'white')
+
+    def end_editing_height(self) -> None:
+        self.config_line_edit(self.txt_altura, '', 'white')
+
+    def config_line_edit(self, line_edit: QtWidgets.QLineEdit, message: str,
+                         color: str = 'red') -> None:
+        self.lb_message.setText(message)
+        line_edit.setStyleSheet(f'color: {color}')
+        value = str(float(line_edit.text()))
+        line_edit.setText(value)
 
     def open_form(self) -> None:
         try:
@@ -184,4 +215,3 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec())
-

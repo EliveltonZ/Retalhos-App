@@ -29,7 +29,7 @@ class Frm_Reserva(Ui_Form):
             return connection
         connection = type_connection.config_connection(path)
         return connection
-    
+
     def list_of_found(self, sql) -> List[str]:
         string_connection = self.connection()
         with ConnectionDB(string_connection) as db:
