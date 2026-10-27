@@ -1,0 +1,28 @@
+Instalar dependencias de desenvolvimento:
+    python -m venv .venv
+    .venv\Scripts\pip install -r requirements-dev.txt
+
+Rodar os testes:
+    .venv\Scripts\python -m pytest
+
+Gerar os executaveis (saida em dist\):
+    .venv\Scripts\pyinstaller --noconfirm Retalhos.spec    -> dist\Retalhos\Retalhos.exe
+    .venv\Scripts\pyinstaller --noconfirm Update.spec      -> dist\Update.exe
+
+Gerar tudo de uma vez (app + Update.exe + instalador):
+    ferramentas\gerar_instalador.bat
+    -> dist\instalador\Retalhos_Setup_<versao>.exe   (a versao vem de retalhos\__init__.py)
+    Requer Inno Setup 6:  winget install JRSoftware.InnoSetup
+
+Instalador (instalador\Retalhos.iss):
+    - instala por usuario em %LOCALAPPDATA%\Programs\Retalhos, sem pedir administrador
+    - mesmo AppId do instalador antigo: atualiza a instalacao existente
+    - nao sobrescreve o Settings.json da maquina; maquina nova recebe instalador\Settings.padrao.json
+    - nao apaga as planilhas (docs\, sheet_proj\), nem ao desinstalar
+    - grava ultima_att com a data da instalacao (o "Atualizar sistema" so oferece zip mais novo)
+    - avisa se faltar o driver do Access 64 bits
+
+Distribuicao:
+    Compactar o conteudo de dist\Retalhos\ em Retalhos.zip e publicar no caminho "local_zip" do Settings.json.
+    Copiar dist\Update.exe para a mesma pasta do Retalhos.zip (Ctrl+U no app copia para as maquinas).
+    O Settings.json de cada maquina NAO e sobrescrito pela atualizacao.

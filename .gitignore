@@ -1,0 +1,13 @@
+/build
+/dist
+/venv
+/.venv
+__pycache__/
+*.pyc
+.pytest_cache/
+*.xml
+*.json.tmp
+/backup_banco
+.ruff_cache/
+/teste_lote
+/ferramentas/icone_previa.png

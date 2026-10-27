@@ -1,0 +1,20 @@
+{
+  "Directory_data_base": "\\\\GDD02\\sistema\\BDretalhos.accdb",
+  "Directory_cc": "\\\\GDN13\\corte_certo_plus\\",
+  "ret": "CHP\\",
+  "mat": "MAT\\",
+  "ped": "PED\\",
+  "Corte_certo": "Corte.exe",
+  "Password": 1,
+  "Largura": 2740,
+  "Altura": 1840,
+  "Largura_min": 350,
+  "Altura_min": 350,
+  "local_zip": "\\\\GDD02\\sistema\\Developer\\Retalhos.zip",
+  "Projeto gerado": "\\\\GDD02\\fabrica\\LOTES DE PRODUCAO",
+  "Sheet_proj": "",
+  "ultima_att": "",
+  "Tema": "Claro",
+  "ConFolhaLote": "\\\\GDD02\\sistema\\ConFolhaLote.xlsx",
+  "AtualizarMinutos": 3
+}
