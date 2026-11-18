@@ -215,6 +215,10 @@ QMenu::separator {{ height: 1px; background: {p.border}; margin: 4px 6px; }}
 QStatusBar {{ background: {p.surface}; border-top: 1px solid {p.border}; }}
 QStatusBar QLabel {{ color: {p.muted}; padding: 0 8px; }}
 QStatusBar QLabel#Alert {{ color: {p.fail}; }}
+QToolButton#NovaVersao {{
+    background: {SUCCESS}; color: white; border: none; border-radius: 9px; padding: 2px 10px; font-weight: 600;
+}}
+QToolButton#NovaVersao:hover {{ background: #15803d; }}
 
 QProgressBar {{
     border: 1px solid {p.border}; border-radius: 6px; background: {p.surface};

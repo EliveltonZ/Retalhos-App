@@ -3,7 +3,9 @@
 ;   ISCC /DAppVersion=2.1.0 instalador\Retalhos.iss   ->  dist\instalador\Retalhos_Setup_2.1.0.exe
 ;
 ; - Instala por usuário em %LOCALAPPDATA%\Programs\Retalhos (sem pedir administrador), a mesma pasta
-;   da versão anterior: o Update.exe consegue sobrescrever os arquivos e o Settings.json é gravável.
+;   da versão anterior: o próprio app consegue rodar o instalador novo e o Settings.json é gravável.
+; - Atualização pelo app (Ajuda › Procurar atualizações): roda este instalador com
+;   /SILENT /CLOSEAPPLICATIONS /REABRIR, que fecha o Retalhos aberto e o abre de novo no fim.
 ; - Mesmo AppId do instalador antigo: atualiza a instalação existente, sem entrada duplicada.
 ; - Settings.json da máquina nunca é sobrescrito nem removido; as planilhas (docs, sheet_proj) também não.
 
@@ -59,10 +61,12 @@ Type: files; Name: "{app}\*.spec"
 Type: files; Name: "{app}\warn-Retalhos.txt"
 Type: files; Name: "{app}\xref-Retalhos.html"
 Type: files; Name: "{app}\icon_retalho.ico"
+; atualizador antigo (Retalhos.zip): substituído pela atualização dentro do app
+Type: files; Name: "{app}\Update.exe"
+Type: files; Name: "{group}\Atualizar {#AppName}.lnk"
 
 [Files]
 Source: "{#Raiz}\dist\Retalhos\*"; DestDir: "{app}"; Excludes: "Settings.json"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#Raiz}\dist\Update.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Settings.padrao.json"; DestDir: "{app}"; DestName: "Settings.json"; Flags: onlyifdoesntexist uninsneveruninstall
 
 [Dirs]
@@ -70,14 +74,25 @@ Name: "{app}\sheet_proj"; Flags: uninsneveruninstall
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"
-Name: "{group}\Atualizar {#AppName}"; Filename: "{app}\Update.exe"
 Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+; atualização feita pelo app: abre o Retalhos de novo sem perguntar
+Filename: "{app}\{#AppExe}"; Flags: nowait; Check: Reabrir
 
 [Code]
+function Reabrir: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 1 to ParamCount do
+    if CompareText(ParamStr(I), '/REABRIR') = 0 then
+      Result := True;
+end;
+
 const
   DRIVER_ACCESS = 'SOFTWARE\ODBC\ODBCINST.INI\Microsoft Access Driver (*.mdb, *.accdb)';
 

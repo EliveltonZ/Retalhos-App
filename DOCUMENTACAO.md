@@ -7,15 +7,16 @@ Sistema desktop (Windows) para **controle de estoque de retalhos de chapas de MD
 - reserva retalhos por projeto e gera a planilha `PRJ_<projeto>.xlsx`;
 - importa sobras a partir de planos de corte `.cutplanning`;
 - dá baixa nos retalhos consumidos;
-- atualiza a si mesmo a partir de um pacote na rede.
+- avisa quando há versão nova (internet ou rede da empresa) e se atualiza com um clique.
 
 | | |
 |---|---|
 | Linguagem | Python 3.12 |
 | Interface | PySide6 (Qt 6), telas construídas em código com tema próprio |
 | Banco | Microsoft Access (`.accdb`) via `pyodbc`; SQLite para testes e desenvolvimento |
-| Empacotamento | PyInstaller: `Retalhos.exe` (pasta) e `Update.exe` (arquivo único) |
+| Empacotamento | PyInstaller: `Retalhos.exe` (pasta) |
 | Instalador | Inno Setup 6: `instalador\Retalhos.iss`, gerado por `ferramentas\gerar_instalador.bat` → `dist\instalador\Retalhos_Setup_<versão>.exe` |
+| Atualização | `ferramentas\publicar_versao.bat` publica no GitHub (repositório público só de instaladores) e na rede; o app avisa e instala (seção 7.1) |
 | Testes | pytest (rodam em SQLite e, opcionalmente, em Access real) |
 
 ---
@@ -25,9 +26,8 @@ Sistema desktop (Windows) para **controle de estoque de retalhos de chapas de MD
 ```
 RetalhosApp/
 ├── main.py                     # Entrada do Retalhos.exe
-├── updater.py                  # Entrada do Update.exe
 ├── Settings.json               # Configuração (mesmo formato da v1)
-├── Retalhos.spec / Update.spec # PyInstaller
+├── Retalhos.spec               # PyInstaller
 ├── requirements.txt            # Dependências de execução
 ├── requirements-dev.txt        # + pytest e pyinstaller
 ├── codigo para compilar EXE.txt# Passo a passo de build e distribuição
@@ -38,7 +38,6 @@ RetalhosApp/
 │   ├── config.py               # Settings: leitura/gravação do Settings.json
 │   ├── models.py               # Chapa, Retalho, Sobra + conversões
 │   ├── app.py                  # Inicialização: log, tema, tratamento global de erros
-│   ├── updater_app.py          # Janela do atualizador (Update.exe)
 │   │
 │   ├── db/
 │   │   ├── database.py         # Database/Session: conexão Access ou SQLite, transações
@@ -50,7 +49,7 @@ RetalhosApp/
 │   │   ├── estoque.py          # EstoqueService: retalhos, materiais, reservas, baixa
 │   │   ├── consumo.py          # Consumo de chapas/retalhos de planos de corte (compras)
 │   │   ├── capa_lote.py        # Capa do lote (novo layout do LOTE.xlsm), gerada pelo sistema
-│   │   └── atualizacao.py      # Verificar, extrair e registrar a atualização
+│   │   └── atualizacao.py      # Procura de versão nova (GitHub/rede), download conferido, instalador
 │   │
 │   ├── ui/
 │   │   ├── theme.py            # Temas claro/escuro (paletas) e folha de estilo
@@ -85,10 +84,11 @@ O arquivo é procurado **ao lado do executável** e, se não estiver lá, na pas
 | `Password` | `database_password` | Senha do Access (usada em **todas** as conexões) |
 | `Largura` / `Altura` | `max_width` / `max_height` | Medida máxima (chapa inteira) |
 | `Largura_min` / `Altura_min` | `min_width` / `min_height` | Medida mínima de um retalho |
-| `local_zip` | `update_zip` | Pacote de atualização `Retalhos.zip` |
+| `local_zip` | `update_zip` | Pasta da rede com as versões publicadas (`versao.json` + instalador). Vale o caminho antigo do `Retalhos.zip`: usa a pasta dele |
+| `RepoAtualizacao` | `update_repo` | Repositório público do GitHub com os instaladores (padrão `EliveltonZ/Retalhos-Releases`; vazio desliga a procura na internet) |
 | `Projeto gerado` | `projects_dir` | Pasta dos lotes gerados (verifica se o corte do projeto já foi gerado) |
 | `Sheet_proj` | `sheets_dir` | Pasta das planilhas `PRJ_*.xlsx` (criada se não existir) |
-| `ultima_att` | `last_update` | Data do pacote instalado (`dd/mm/aaaa hh:mm:ss`) |
+| `ultima_att` | `last_update` | Data da instalação (gravada pelo instalador; só informativa) |
 | `ConFolhaLote` | `conf_folha_lote` | Planilha com os projetos do lote (padrão `\\GDD02\sistema\ConFolhaLote.xlsx`), usada na capa do lote |
 | `AtualizarMinutos` | `auto_refresh_minutes` | Intervalo da atualização automática da lista principal (padrão `3`; `0` desliga) |
 | `Tema` | `theme` | `Claro`, `Escuro` ou `Automático` (segue o Windows); gravado ao trocar o tema no app |
@@ -296,10 +296,9 @@ Todas as operações que escrevem no Corte Certo verificam **antes** se a pasta 
 | Produção › Baixa de reservas | | Remove do estoque os reservados de um projeto |
 | Produção › Retalhos removidos | | Consulta por material dos baixados/excluídos; restauração (admin) |
 | Ferramentas › Recriar arquivos do Corte Certo | `Ctrl+R` | Ressincroniza os `RET*.TAB` |
-| Ferramentas › Atualizar sistema | | Abre o `Update.exe` |
 | Exibir › Atualizar a lista automaticamente | | Liga/desliga a atualização periódica (a cada `AtualizarMinutos`) |
 | Exibir › Tema (ou botão ☀/🌙 no topo) | `Ctrl+Shift+T` | Tema claro, escuro ou automático |
-| Ferramentas › Atualizar o atualizador | `Ctrl+U` | Copia o `Update.exe` da rede |
+| Ajuda › Procurar atualizações | | Procura versão nova agora (também é automático: ao abrir e a cada 4 h) |
 
 ### Diálogos (`ui/dialogs/`)
 
@@ -329,12 +328,9 @@ Todos os popups (diálogos e mensagens de confirmação, aviso e erro) usam `Rou
   - **Reservar N retalho(s)** (painel de retalhos) reserva no estoque exatamente os retalhos que o plano vai cortar. Antes de gravar, uma conferência mostra o que será reservado. Veja a seção 4.3.
 - **Cadastro de cores**: um único botão *Salvar*, que insere ou atualiza conforme o código.
 
-### Atualizador (`Update.exe`)
+### Atualização do sistema
 
-1. Compara a data do `Retalhos.zip` com `ultima_att`.
-2. Encerra **todos** os processos `Retalhos.exe`.
-3. Extrai o pacote arquivo a arquivo, com progresso real. Ignora o próprio `Update.exe` e o `Settings.json` local.
-4. Grava a nova `ultima_att` e oferece o botão *Abrir Retalhos*.
+Veja a seção 7.1.
 
 ### Erros e log
 
@@ -352,7 +348,7 @@ Todos os popups (diálogos e mensagens de confirmação, aviso e erro) usam `Rou
 
 | Permissão | Libera |
 |---|---|
-| Administrador | Tudo, mais Usuários, Configurações, Recriar arquivos do Corte Certo e Atualizar o atualizador |
+| Administrador | Tudo, mais Usuários, Configurações e Recriar arquivos do Corte Certo |
 | PCP | Menu PCP (plano de corte, consumo/compras, reserva por projeto, cadastro de cores) |
 | Remover reserva | Liberar reserva |
 | Reservar manual | Botão Reservar… |
@@ -383,6 +379,30 @@ python -m venv .venv
 - **Desenvolver sem a rede:** aponte `Directory_data_base` para um arquivo `.db` (SQLite) com as duas tabelas.
 - **Build:** veja [codigo para compilar EXE.txt](codigo%20para%20compilar%20EXE.txt).
 - **Ícone:** `.venv\Scripts\python ferramentas\gerar_icone.py` redesenha `retalhos/resources/icon_retalho.ico` em 9 tamanhos (16 a 256 px). Use `--previa` para só ver a imagem `ferramentas/icone_previa.png`. As cores ficam no início do script.
+
+### 7.1 Atualização do sistema
+
+**Onde ficam as versões.** O código fica no repositório **privado** `EliveltonZ/Retalhos-App`. Os instaladores ficam nas *Releases* de um repositório **público e sem código**, `EliveltonZ/Retalhos-Releases` (chave `RepoAtualizacao`). Uma cópia também fica na pasta da rede (`local_zip`). Cada versão publicada tem o instalador e um `versao.json`:
+
+```json
+{"versao": "2.2.0", "instalador": "Retalhos_Setup_2.2.0.exe", "sha256": "…", "tamanho": 89212878,
+ "data": "18/11/2026", "notas": "conteúdo de instalador/novidades.md"}
+```
+
+**No app** (`services/atualizacao.py`, `ui/dialogs/atualizacao_dialog.py`):
+
+1. Ao abrir (depois de 5 s) e a cada 4 h, procura em segundo plano. Lê o `versao.json` da rede e o de `github.com/<repo>/releases/latest/download/versao.json`. Esse endereço não entra no limite de consultas da API do GitHub.
+2. Se uma das duas versões for maior que a instalada, aparece o botão verde **⬆ Versão X disponível** na barra de status. A pergunta *Atualizar agora / Depois*, com as notas, aparece **uma vez por versão** em cada sessão, e só se não houver outro diálogo aberto. Clicar no botão pergunta de novo.
+3. Na versão mais nova vence quem tiver o número maior. No empate, vence a rede, porque baixa mais rápido.
+4. **Atualizar agora:**
+   - baixa o instalador para `%LOCALAPPDATA%\Retalhos\atualizacoes` e confere o SHA-256;
+   - roda o instalador com `/SILENT /CLOSEAPPLICATIONS /REABRIR` e fecha o app;
+   - o instalador abre o Retalhos de novo no fim.
+5. Sem internet e sem rede, nada acontece: não há erro nem aviso. *Ajuda › Procurar atualizações* faz a procura na hora e sempre responde.
+
+**Publicar uma versão:** suba `__version__`, escreva `instalador/novidades.md` e rode `ferramentas\publicar_versao.bat`. O passo a passo está em [codigo para compilar EXE.txt](codigo%20para%20compilar%20EXE.txt).
+
+**Substitui o `Update.exe`/`Retalhos.zip` da v2.0.** O instalador apaga o `Update.exe` e o atalho *Atualizar Retalhos* que tiverem ficado de instalações antigas.
 
 ---
 

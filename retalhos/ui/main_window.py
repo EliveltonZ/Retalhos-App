@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import subprocess
 from datetime import datetime
 from collections.abc import Callable
 
@@ -15,20 +14,21 @@ from PySide6.QtWidgets import (
 from .. import APP_NAME, __version__
 from ..config import Settings
 from ..models import Retalho
-from ..paths import app_dir, data_dir
+from ..paths import data_dir
 from ..services import EstoqueService, UsuarioService
-from ..services.atualizacao import UPDATER_EXE, atualizar_atualizador
+from ..services import atualizacao
 from .columns import retalho_columns, retalho_row_color
 from .dialogs import (
     BaixaDialog, CadastroDialog, ConfigDialog, ConsumoDialog, LeitorXmlDialog, MateriaisDialog, NovoRetalhoDialog,
     ReservaDialog, ReservaManualDialog, LoginDialog, TrocarSenhaDialog, UsuariosDialog, HistoricoDialog,
     RemovidosDialog, TransferenciaDialog,
 )
+from .dialogs.atualizacao_dialog import AtualizacaoDialog, pasta_downloads
 from . import theme
 from .impressao import gerar_pdf_conferencia
 from .widgets import (
     BaseDialog, DataTable, ObjectTableModel, StatCard, Worker, app_icon, busy, button, card, confirm, info,
-    label, show_exception, warning,
+    label, show_exception,
 )
 
 _FILTROS: dict[str, Callable[[Retalho], bool] | None] = {
@@ -63,6 +63,14 @@ class MainWindow(QMainWindow):
         self._setup_auto_refresh()
         self.act_auto_refresh.blockSignals(False)
         QTimer.singleShot(0, self.reload)
+        # procura de versão nova: logo depois de abrir e a cada 4 h (máquinas que ficam ligadas o dia todo)
+        self._nova_versao: atualizacao.NovaVersao | None = None
+        self._versao_perguntada = ""
+        self._update_worker: Worker | None = None
+        self.update_timer = QTimer(self, interval=4 * 3600 * 1000)
+        self.update_timer.timeout.connect(self._procurar_em_segundo_plano)
+        self.update_timer.start()
+        QTimer.singleShot(5000, self._procurar_em_segundo_plano)
 
     # =============================================================== layout
     def _action(self, text: str, slot: Callable[[], None], shortcut: str | QKeySequence = "",
@@ -108,8 +116,8 @@ class MainWindow(QMainWindow):
             "Recriar arquivos do Corte Certo", self.rebuild_files, "Ctrl+R",
             "Apaga os RET*.TAB e recria a partir dos retalhos disponíveis no banco",
         )
-        self.act_update = self._action("Atualizar sistema…", self.start_updater)
-        self.act_update_updater = self._action("Atualizar o atualizador", self.update_updater, "Ctrl+U")
+        self.act_update = self._action("Procurar atualizações…", self.procurar_atualizacao,
+                                       tip="Procura uma versão nova na internet e na pasta da rede")
         self.act_about = self._action("Sobre", self.about)
         self.act_filter = self._action("Filtrar", lambda: self.txt_filter.setFocus(), "Ctrl+F")
         self.act_toggle_theme = self._action("Alternar claro/escuro", self.toggle_theme, "Ctrl+Shift+T")
@@ -137,8 +145,6 @@ class MainWindow(QMainWindow):
 
         m = bar.addMenu("&Ferramentas")
         m.addAction(self.act_rebuild)
-        m.addSeparator()
-        m.addActions([self.act_update, self.act_update_updater])
 
         self.menu_admin = bar.addMenu("A&dministração")  # só aparece para administradores
         self.menu_admin.addActions([self.act_usuarios, self.act_config])
@@ -159,6 +165,8 @@ class MainWindow(QMainWindow):
         m.addAction(self.act_auto_refresh)
 
         m = bar.addMenu("A&juda")
+        m.addAction(self.act_update)
+        m.addSeparator()
         m.addAction(self.act_about)
 
     def _build_body(self) -> None:
@@ -310,6 +318,12 @@ class MainWindow(QMainWindow):
         sb.addWidget(self.lb_cc)
         self.lb_refresh = QLabel()
         sb.addPermanentWidget(self.lb_refresh)
+        self.bt_nova_versao = QToolButton()
+        self.bt_nova_versao.setObjectName("NovaVersao")
+        self.bt_nova_versao.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.bt_nova_versao.setVisible(False)
+        self.bt_nova_versao.clicked.connect(lambda: self._oferecer_atualizacao(self._nova_versao))
+        sb.addPermanentWidget(self.bt_nova_versao)
         sb.addPermanentWidget(QLabel(f"v{__version__}"))
 
     # ======================================================= estado/dados
@@ -324,7 +338,7 @@ class MainWindow(QMainWindow):
             act.setEnabled(self.settings.menu_pcp_enabled)
         admin = self.settings.is_admin
         self.menu_admin.menuAction().setVisible(admin)
-        for act in (self.act_usuarios, self.act_config, self.act_update_updater):
+        for act in (self.act_usuarios, self.act_config):
             act.setEnabled(admin)
         self.cc_ok = self.service.arquivos.instalado()
         usuario = self.settings.usuario
@@ -656,22 +670,48 @@ class MainWindow(QMainWindow):
             self.reload()
             self.statusBar().showMessage(f"Usuário: {dlg.usuario.exibicao}", 6000)
 
-    def start_updater(self) -> None:
-        exe = app_dir() / UPDATER_EXE
-        if not exe.is_file():
-            warning(self, "Atualização", f"Atualizador não encontrado:\n{exe}")
+    # ============================================================ atualização do sistema
+    def _procurar_em_segundo_plano(self) -> None:
+        """Sem janela de erro: sem internet e sem rede, simplesmente não avisa nada."""
+        if self._update_worker is not None and self._update_worker.isRunning():
             return
-        subprocess.Popen([str(exe)], cwd=str(app_dir()))  # noqa: S603
+        settings = self.settings
+        self._update_worker = Worker(lambda _p: atualizacao.buscar_atualizacao(settings), self)
+        self._update_worker.succeeded.connect(self._atualizacao_encontrada)
+        self._update_worker.start()
 
-    def update_updater(self) -> None:
-        if not confirm(self, "Atualização", "Atualizar o programa de atualização (Update.exe)?"):
+    def _atualizacao_encontrada(self, nova: atualizacao.NovaVersao | None, perguntar: bool = True) -> None:
+        self._nova_versao = nova
+        self.bt_nova_versao.setVisible(nova is not None)
+        if nova is None:
+            atualizacao.limpar_downloads(pasta_downloads())  # já atualizado: instalador baixado não serve mais
             return
-        try:
-            destino = atualizar_atualizador(self.settings, app_dir())
-        except Exception as exc:  # noqa: BLE001
-            show_exception(self, "Atualização", exc)
+        self.bt_nova_versao.setText(f"⬆ Versão {nova.versao} disponível")
+        self.bt_nova_versao.setToolTip("Clique para atualizar o Retalhos")
+        # pergunta uma vez por versão nesta sessão; depois fica só o aviso na barra de status.
+        # Com outro diálogo aberto não interrompe: pergunta na próxima procura.
+        livre = QApplication.activeModalWidget() is None and self.isVisible()
+        if perguntar and livre and self._versao_perguntada != nova.versao:
+            self._oferecer_atualizacao(nova)
+
+    def _oferecer_atualizacao(self, nova: atualizacao.NovaVersao | None) -> None:
+        if nova is None:
             return
-        info(self, "Atualização", f"Atualizador copiado para:\n{destino}")
+        self._versao_perguntada = nova.versao
+        AtualizacaoDialog(nova, self).exec()
+
+    def procurar_atualizacao(self) -> None:
+        """Menu Ajuda › Procurar atualizações: sempre responde, mesmo quando não há nada novo."""
+        with busy():
+            nova = atualizacao.buscar_atualizacao(self.settings)
+        self._atualizacao_encontrada(nova, perguntar=False)
+        if nova is not None:
+            self._oferecer_atualizacao(nova)
+        else:
+            info(self, "Atualização",
+                 f"Você já está na versão mais recente ({__version__}).\n\n"
+                 "Se este computador estiver sem internet e fora da rede da empresa, a procura não "
+                 "consegue verificar.")
 
     def about(self) -> None:
         info(

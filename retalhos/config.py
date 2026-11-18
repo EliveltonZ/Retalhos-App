@@ -33,6 +33,7 @@ _KEYS: dict[str, str] = {
     "min_width": "Largura_min",
     "min_height": "Altura_min",
     "update_zip": "local_zip",
+    "update_repo": "RepoAtualizacao",
     "projects_dir": "Projeto gerado",
     "sheets_dir": "Sheet_proj",
     "last_update": "ultima_att",
@@ -68,7 +69,8 @@ class Settings:
     max_height: float = 1840.0
     min_width: float = 350.0
     min_height: float = 350.0
-    update_zip: str = ""
+    update_zip: str = ""  # pasta da rede com as versões (antes: caminho do Retalhos.zip; vale a pasta dele)
+    update_repo: str = "EliveltonZ/Retalhos-Releases"  # repositório público do GitHub com os instaladores
     projects_dir: str = ""
     sheets_dir: str = ""
     last_update: str = ""

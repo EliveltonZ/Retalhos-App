@@ -1,0 +1,5 @@
+- **Filtro por coluna** na tela principal e busca mais rápida enquanto digita.
+- **Transferência de setor em lote**: selecione vários retalhos e mude o setor de uma vez (fica no histórico de cada peça).
+- **Imprimir conferência**: PDF com os retalhos filtrados na tela, para conferir o estoque.
+- Caixas de seleção mais visíveis no tema escuro.
+- **Atualização automática**: o Retalhos avisa quando há uma versão nova e atualiza com um clique.

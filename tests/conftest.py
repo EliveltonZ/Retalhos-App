@@ -65,6 +65,7 @@ def settings(request, tmp_path: Path) -> Settings:
         database_path=str(db), corte_certo_dir=str(cc) + os.sep, ret_subdir="CHP\\",
         ped_subdir="PED\\", projects_dir=str(tmp_path / "lotes"),
         sheets_dir=str(tmp_path / "sheets"),
+        update_repo="",  # testes nunca procuram versão nova na internet
     )
     s.path = tmp_path / "Settings.json"
     s.usuario = Usuario(1, "TESTE", "TESTE", admin=True)  # sessão logada (responsável = TESTE)

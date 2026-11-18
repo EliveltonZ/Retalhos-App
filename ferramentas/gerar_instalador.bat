@@ -1,5 +1,5 @@
 @echo off
-rem Gera dist\Retalhos\ (app), dist\Update.exe e o instalador dist\instalador\Retalhos_Setup_<versao>.exe
+rem Gera dist\Retalhos\ (app) e o instalador dist\instalador\Retalhos_Setup_<versao>.exe
 rem Uso: ferramentas\gerar_instalador.bat   (na raiz do projeto ou com duplo clique)
 setlocal
 cd /d "%~dp0.."
@@ -18,7 +18,6 @@ for /f %%v in ('%PY% -c "import retalhos; print(retalhos.__version__)"') do set 
 echo === Retalhos %VERSAO% ===
 
 %PY% -m PyInstaller --noconfirm Retalhos.spec || exit /b 1
-%PY% -m PyInstaller --noconfirm Update.spec || exit /b 1
 "%ISCC%" /Q /DAppVersion=%VERSAO% instalador\Retalhos.iss || exit /b 1
 
 echo.

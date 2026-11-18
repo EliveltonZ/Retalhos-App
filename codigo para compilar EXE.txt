@@ -5,11 +5,10 @@ Instalar dependencias de desenvolvimento:
 Rodar os testes:
     .venv\Scripts\python -m pytest
 
-Gerar os executaveis (saida em dist\):
+Gerar o executavel (saida em dist\):
     .venv\Scripts\pyinstaller --noconfirm Retalhos.spec    -> dist\Retalhos\Retalhos.exe
-    .venv\Scripts\pyinstaller --noconfirm Update.spec      -> dist\Update.exe
 
-Gerar tudo de uma vez (app + Update.exe + instalador):
+Gerar app + instalador:
     ferramentas\gerar_instalador.bat
     -> dist\instalador\Retalhos_Setup_<versao>.exe   (a versao vem de retalhos\__init__.py)
     Requer Inno Setup 6:  winget install JRSoftware.InnoSetup
@@ -19,10 +18,19 @@ Instalador (instalador\Retalhos.iss):
     - mesmo AppId do instalador antigo: atualiza a instalacao existente
     - nao sobrescreve o Settings.json da maquina; maquina nova recebe instalador\Settings.padrao.json
     - nao apaga as planilhas (docs\, sheet_proj\), nem ao desinstalar
-    - grava ultima_att com a data da instalacao (o "Atualizar sistema" so oferece zip mais novo)
     - avisa se faltar o driver do Access 64 bits
+    - com /REABRIR (usado pelo app ao se atualizar) abre o Retalhos de novo no fim
 
-Distribuicao:
-    Compactar o conteudo de dist\Retalhos\ em Retalhos.zip e publicar no caminho "local_zip" do Settings.json.
-    Copiar dist\Update.exe para a mesma pasta do Retalhos.zip (Ctrl+U no app copia para as maquinas).
-    O Settings.json de cada maquina NAO e sobrescrito pela atualizacao.
+Publicar uma versao nova (as maquinas sao avisadas sozinhas):
+    1. Suba a versao em retalhos\__init__.py (e pyproject.toml), ex.: 2.1.0 -> 2.2.0
+    2. Escreva o que mudou em instalador\novidades.md (o usuario ve esse texto ao atualizar)
+    3. Commit e push do codigo
+    4. ferramentas\publicar_versao.bat
+       - gera o instalador e o versao.json
+       - cria a Release v<versao> no repositorio PUBLICO de instaladores (RepoAtualizacao do Settings.json,
+         padrao EliveltonZ/Retalhos-Releases). O codigo continua no repositorio privado.
+       - copia instalador + versao.json para a pasta do local_zip (\\GDD02\sistema\Developer)
+       Opcoes: --sem-build (usa o instalador ja gerado), --so-rede, --so-internet
+    Requer GitHub CLI logado na conta dona do repositorio:
+       winget install GitHub.cli
+       gh auth login

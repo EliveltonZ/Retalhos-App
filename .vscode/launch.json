@@ -9,15 +9,6 @@
       "cwd": "${workspaceFolder}",
       "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
       "console": "integratedTerminal"
-    },
-    {
-      "name": "Atualizador (Update.exe)",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${workspaceFolder}\\updater.py",
-      "cwd": "${workspaceFolder}",
-      "python": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
-      "console": "integratedTerminal"
     }
   ]
 }
