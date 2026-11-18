@@ -93,6 +93,46 @@ begin
       Result := True;
 end;
 
+{ há algum Retalhos.exe rodando? (WMI; na dúvida responde que não) }
+function RetalhosAberto: Boolean;
+var
+  Locator, Servico, Lista: Variant;
+begin
+  Result := False;
+  try
+    Locator := CreateOleObject('WbemScripting.SWbemLocator');
+    Servico := Locator.ConnectServer('.', 'root\CIMV2');
+    Lista := Servico.ExecQuery('SELECT ProcessId FROM Win32_Process WHERE Name = ''Retalhos.exe''');
+    Result := Lista.Count > 0;
+  except
+    Result := False;
+  end;
+end;
+
+{ Atualização pelo app (/REABRIR): o Windows não consegue fechar o Retalhos sozinho e, em modo silencioso,
+  o instalador desistiria. O app se fecha logo depois de abrir o instalador: espera até 15 s e, se ainda
+  estiver aberto, encerra o Retalhos deste usuário. }
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  I, Codigo: Integer;
+begin
+  Result := '';
+  if not Reabrir then
+    Exit;
+  I := 0;
+  while RetalhosAberto and (I < 30) do
+  begin
+    Sleep(500);
+    I := I + 1;
+  end;
+  if RetalhosAberto then
+  begin
+    Exec(ExpandConstant('{sys}\taskkill.exe'),
+      '/F /IM Retalhos.exe /FI "USERNAME eq ' + GetUserNameString + '"', '', SW_HIDE, ewWaitUntilTerminated, Codigo);
+    Sleep(1000);
+  end;
+end;
+
 const
   DRIVER_ACCESS = 'SOFTWARE\ODBC\ODBCINST.INI\Microsoft Access Driver (*.mdb, *.accdb)';
 
@@ -165,7 +205,7 @@ begin
   begin
     if SettingsNovo then
       DefinirValor(Texto, 'Sheet_proj', ExpandConstant('{app}\sheet_proj\'));
-    { a versão instalada é desta data: o "Atualizar sistema" só oferece um Retalhos.zip mais novo que ela }
+    { data da instalação (informativa) }
     DefinirValor(Texto, 'ultima_att', GetDateTimeString('dd/mm/yyyy hh:nn:ss', '/', ':'));
     SaveStringToFile(Arquivo, Texto, False);
   end;
