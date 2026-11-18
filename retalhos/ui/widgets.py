@@ -18,7 +18,8 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QAbstractItemView, QApplication, QDialog, QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QPlainTextEdit, QPushButton, QSizeGrip, QTableView, QToolButton, QVBoxLayout, QWidget,
+    QPlainTextEdit, QPushButton, QSizeGrip, QStyle, QStyledItemDelegate, QStyleOptionViewItem, QTableView,
+    QToolButton, QVBoxLayout, QWidget,
 )
 
 from ..db import DatabaseError
@@ -210,11 +211,15 @@ class ObjectTableModel(QAbstractTableModel):
         self.can_check = can_check or (lambda _: True)
         self._rows: list[T] = []
         self._checked: set[int] = set()
+        # texto de busca por linha (minúsculo), montado na 1ª vez que o filtro precisa: o filtro roda a cada
+        # tecla e formatar todas as células de novo (datas, medidas) a cada vez deixava a digitação lenta
+        self._busca: list[tuple[str, list[str]] | None] = []
 
     # --- dados
     def set_rows(self, rows: Sequence[T], checked: Callable[[T], bool] | None = None) -> None:
         self.beginResetModel()
         self._rows = list(rows)
+        self._busca = [None] * len(self._rows)
         self._checked = {i for i, r in enumerate(self._rows) if checked and checked(r) and self.can_check(r)}
         self.endResetModel()
 
@@ -223,6 +228,16 @@ class ObjectTableModel(QAbstractTableModel):
 
     def row(self, index: int) -> T:
         return self._rows[index]
+
+    def texto_busca(self, index: int, coluna: int | None = None) -> str:
+        """Texto da linha para o filtro: todas as colunas juntas ou só ``coluna`` (posição em ``columns``)."""
+        cache = self._busca[index]
+        if cache is None:
+            obj = self._rows[index]
+            valores = [_display(c.value(obj)).lower() for c in self.columns]
+            # separador entre colunas: o texto procurado não "emenda" o fim de uma com o início da outra
+            cache = self._busca[index] = (chr(0x1F).join(valores), valores)
+        return cache[0] if coluna is None else cache[1][coluna]
 
     def checked_rows(self) -> list[T]:
         return [self._rows[i] for i in sorted(self._checked)]
@@ -294,20 +309,31 @@ class ObjectTableModel(QAbstractTableModel):
 
 
 class FilterProxy(QSortFilterProxyModel):
-    """Filtro por texto (todas as colunas) + predicado opcional."""
+    """Filtro por texto (todas as colunas ou uma só) + predicado opcional."""
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
         self.setSortRole(SORT_ROLE)
         self._text = ""
+        self._column: int | None = None  # coluna do modelo onde procurar o texto (None = todas)
         self._predicate: Callable[[Any], bool] | None = None
 
     def set_text(self, text: str) -> None:
-        self._text = text.strip().lower()
-        self.invalidateFilter()
+        self.set_filter(text, self._column, self._predicate)
+
+    def set_column(self, column: int | None) -> None:
+        """``column``: posição em ``ObjectTableModel.columns`` (sem contar a coluna de seleção)."""
+        self.set_filter(self._text, column, self._predicate)
 
     def set_predicate(self, predicate: Callable[[Any], bool] | None) -> None:
-        self._predicate = predicate
+        self.set_filter(self._text, self._column, predicate)
+
+    def set_filter(self, text: str, column: int | None, predicate: Callable[[Any], bool] | None) -> None:
+        """Muda tudo de uma vez: a tabela é refiltrada uma única vez (e nenhuma, se nada mudou)."""
+        text = text.strip().lower()
+        if (text, column, predicate) == (self._text, self._column, self._predicate):
+            return
+        self._text, self._column, self._predicate = text, column, predicate
         self.invalidateFilter()
 
     def source_row(self, proxy_row: int) -> Any:
@@ -320,11 +346,24 @@ class FilterProxy(QSortFilterProxyModel):
             return False
         if not self._text:
             return True
-        for col in range(model.columnCount()):
-            value = model.data(model.index(source_row, col), Qt.ItemDataRole.DisplayRole)
-            if value and self._text in str(value).lower():
-                return True
-        return False
+        return self._text in model.texto_busca(source_row, self._column)
+
+
+class _CorDaLinhaDelegate(QStyledItemDelegate):
+    """Pinta a cor da linha (reservado, chapa inteira…) na célula inteira antes do conteúdo.
+
+    Com a folha de estilo, o Qt não pinta essa cor embaixo da caixa de seleção e o fundo da tabela
+    aparecia como um "bloco" escuro ao redor dela.
+    """
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        cor = index.data(Qt.ItemDataRole.BackgroundRole)
+        if cor is not None and not option.state & QStyle.StateFlag.State_Selected:
+            painter.fillRect(option.rect, cor)
+        # sem a moldura de "célula atual": a seleção da linha inteira já mostra onde se está
+        opcao = QStyleOptionViewItem(option)
+        opcao.state &= ~QStyle.StateFlag.State_HasFocus
+        super().paint(painter, opcao, index)
 
 
 class DataTable(QTableView):
@@ -338,6 +377,7 @@ class DataTable(QTableView):
         self.proxy = FilterProxy(self)
         self.proxy.setSourceModel(model)
         self.setModel(self.proxy)
+        self.setItemDelegate(_CorDaLinhaDelegate(self))
 
         self.setSortingEnabled(True)
         self.setAlternatingRowColors(model.row_color is None)

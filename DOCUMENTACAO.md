@@ -1,4 +1,4 @@
-# RetalhosApp — Documentação Técnica (v2.0)
+# RetalhosApp — Documentação Técnica (v2.1)
 
 Sistema desktop (Windows) para **controle de estoque de retalhos de chapas de MDF** integrado ao **Corte Certo Plus**. Ele:
 
@@ -112,6 +112,7 @@ O arquivo é procurado **ao lado do executável** e, se não estiver lá, na pas
 | Liberar / desfazer reserva | Histórico (LIBERAÇÃO / CANCELAMENTO), com de quem era a reserva |
 | Baixa (consumo) | `DataBaixa` + `ResponsavelBaixa` e histórico (BAIXA) |
 | Excluir | `DataExclusao` + `ResponsavelExclusao` e histórico (EXCLUSÃO). **Não apaga mais** |
+| Transferir setor | `Setor` e histórico (TRANSFERÊNCIA, "setor 5 → 12"), um registro por peça |
 | Restaurar (administrador) | Limpa baixa/exclusão e reserva; histórico (RESTAURAÇÃO, com o que era e quem tinha removido) |
 
 **Retalhos removidos** (Produção › Retalhos removidos):
@@ -265,7 +266,8 @@ Todas as operações que escrevem no Corte Certo verificam **antes** se a pasta 
 ### Janela principal
 
 - **Indicadores**: total em estoque, disponíveis, reservados e chapas inteiras.
-- **Filtro** em todas as colunas (`Ctrl+F`, `Esc` limpa) e seletor *Todos / Disponíveis / Reservados*.
+- **Filtro** em todas as colunas ou só em uma (seletor ao lado do campo: ID, Setor, Material…), `Ctrl+F`, `Esc` limpa, e seletor *Todos / Disponíveis / Reservados*.
+- **Transferir setor** (`Ctrl+T`): selecione vários retalhos (Ctrl/Shift, ou filtre e `Ctrl+A`) e mande todos para o mesmo setor. A lista de destinos traz os setores existentes (1, 2… 17, depois os de texto), e dá para digitar um novo. Quem já está no setor de destino é ignorado. Antes de gravar, confere no banco se todos ainda estão no estoque: se algum foi baixado/excluído em outra máquina, nada é alterado. Retalhos reservados também podem ser transferidos, e a reserva continua.
 - **Tabela**: ordenação correta por número e data e cores por situação. A prioridade das cores é material inativo, depois chapa inteira, depois reservado (igual à v1).
 - **Barra de status**: banco em uso, situação do Corte Certo, hora da última atualização e versão.
 - **Atualização automática** (padrão a cada 3 min):
@@ -290,6 +292,7 @@ Todas as operações que escrevem no Corte Certo verificam **antes** se a pasta 
 | PCP › Reserva por projeto | | Reserva retalhos para um pedido |
 | PCP › Cadastro de cores | | Inclui ou edita materiais |
 | Produção › Materiais | | Consulta de materiais |
+| Produção › Transferir setor | `Ctrl+T` | Muda o setor dos retalhos selecionados (com histórico) |
 | Produção › Baixa de reservas | | Remove do estoque os reservados de um projeto |
 | Produção › Retalhos removidos | | Consulta por material dos baixados/excluídos; restauração (admin) |
 | Ferramentas › Recriar arquivos do Corte Certo | `Ctrl+R` | Ressincroniza os `RET*.TAB` |

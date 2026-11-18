@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 from datetime import datetime
 from collections.abc import Callable
@@ -14,16 +15,17 @@ from PySide6.QtWidgets import (
 from .. import APP_NAME, __version__
 from ..config import Settings
 from ..models import Retalho
-from ..paths import app_dir
+from ..paths import app_dir, data_dir
 from ..services import EstoqueService, UsuarioService
 from ..services.atualizacao import UPDATER_EXE, atualizar_atualizador
 from .columns import retalho_columns, retalho_row_color
 from .dialogs import (
     BaixaDialog, CadastroDialog, ConfigDialog, ConsumoDialog, LeitorXmlDialog, MateriaisDialog, NovoRetalhoDialog,
     ReservaDialog, ReservaManualDialog, LoginDialog, TrocarSenhaDialog, UsuariosDialog, HistoricoDialog,
-    RemovidosDialog,
+    RemovidosDialog, TransferenciaDialog,
 )
 from . import theme
+from .impressao import gerar_pdf_conferencia
 from .widgets import (
     BaseDialog, DataTable, ObjectTableModel, StatCard, Worker, app_icon, busy, button, card, confirm, info,
     label, show_exception, warning,
@@ -83,10 +85,14 @@ class MainWindow(QMainWindow):
                                           "Quem lançou, reservou, liberou, deu baixa ou excluiu, e quando")
         self.act_reserve = self._action("Reservar retalho(s)…", self.reserve_selected, "Ctrl+Shift+R",
                                         "Reserva manual para um projeto (inclusive um que ainda será feito)")
+        self.act_transferir = self._action("Transferir setor…", self.transfer_selected, "Ctrl+T",
+                                           "Muda o setor dos retalhos selecionados (fica no histórico)")
         self.act_config = self._action("Configurações…", self.open_config)
         self.act_usuarios = self._action("Usuários…", self.open_usuarios)
         self.act_trocar_senha = self._action("Trocar minha senha…", self.trocar_senha)
         self.act_trocar_usuario = self._action("Trocar usuário…", self.trocar_usuario)
+        self.act_imprimir = self._action("Imprimir conferência…", self.print_filtered, "Ctrl+P",
+                                         "PDF com os retalhos que estão na tela (filtro e ordem atuais)")
         self.act_quit = self._action("Sair", self.close, "Ctrl+Q")
         self.act_xml = self._action("Leitor de plano de corte…", lambda: self._open(LeitorXmlDialog))
         self.act_reserva = self._action("Reserva por projeto…", lambda: self._open(ReservaDialog))
@@ -115,6 +121,8 @@ class MainWindow(QMainWindow):
         m = bar.addMenu("&Arquivo")
         m.addActions([self.act_reload, self.act_new])
         m.addSeparator()
+        m.addAction(self.act_imprimir)
+        m.addSeparator()
         m.addActions([self.act_trocar_senha, self.act_trocar_usuario])
         m.addSeparator()
         m.addAction(self.act_quit)
@@ -125,7 +133,7 @@ class MainWindow(QMainWindow):
         self.menu_pcp.addAction(self.act_cadastro)
 
         m = bar.addMenu("P&rodução")
-        m.addActions([self.act_materiais, self.act_baixa, self.act_removidos])
+        m.addActions([self.act_transferir, self.act_materiais, self.act_baixa, self.act_removidos])
 
         m = bar.addMenu("&Ferramentas")
         m.addAction(self.act_rebuild)
@@ -190,6 +198,9 @@ class MainWindow(QMainWindow):
         self.txt_filter.setClearButtonEnabled(True)
         self.txt_filter.setMinimumWidth(340)
         tools.addWidget(self.txt_filter, 1)
+        self.cb_coluna = QComboBox()  # procurar o texto em todas as colunas ou só em uma
+        self.cb_coluna.setToolTip("Coluna onde procurar o texto do filtro")
+        tools.addWidget(self.cb_coluna)
         self.cb_status = QComboBox()
         self.cb_status.addItems(list(_FILTROS))
         tools.addWidget(self.cb_status)
@@ -202,13 +213,16 @@ class MainWindow(QMainWindow):
         self.bt_reserve = button("Reservar…", tooltip="Reservar os retalhos selecionados para um projeto, "
                                                      "mesmo que ainda não exista (Ctrl+Shift+R)")
         self.bt_reserve.clicked.connect(self.reserve_selected)
+        self.bt_transferir = button("Transferir setor…", tooltip="Muda o setor dos retalhos selecionados; "
+                                                                 "use Ctrl/Shift para vários (Ctrl+T)")
+        self.bt_transferir.clicked.connect(self.transfer_selected)
         self.bt_release = button("Liberar reserva", tooltip="Devolve o retalho reservado ao estoque (Ctrl+L)")
         self.bt_release.clicked.connect(self.release_selected)
         self.bt_delete = button("Excluir", "danger", "Remove_Icon.png", "Excluir retalho selecionado (Del)")
         self.bt_delete.clicked.connect(self.delete_selected)
         self.bt_new = button("Novo retalho", "primary", "Add_Icon.png", "Lançar novo retalho (Ctrl+N)")
         self.bt_new.clicked.connect(self.new_retalho)
-        for b in (self.bt_reload, self.bt_historico, self.bt_reserve, self.bt_release, self.bt_delete, self.bt_new):
+        for b in (self.bt_reload, self.bt_historico, self.bt_transferir, self.bt_reserve, self.bt_release, self.bt_delete, self.bt_new):
             tools.addWidget(b)
         layout.addLayout(tools)
 
@@ -218,6 +232,10 @@ class MainWindow(QMainWindow):
         self.table.rowActivated.connect(self._on_activate)
         self.table.selectionModel().selectionChanged.connect(self._update_buttons)
         layout.addWidget(self.table, 1)
+        self.cb_coluna.addItem("Todas as colunas", None)
+        for i, col in enumerate(self.model.columns):
+            if col.title != "x":
+                self.cb_coluna.addItem(col.title, i)
 
         legend = QHBoxLayout()
         legend.setSpacing(16)
@@ -228,11 +246,19 @@ class MainWindow(QMainWindow):
         legend.addStretch()
         self.lb_shown = label("", "Muted")
         legend.addWidget(self.lb_shown)
+        self.bt_imprimir = button("Imprimir conferência…", tooltip="PDF da lista filtrada para conferir o "
+                                                                     "estoque, com caixa para marcar (Ctrl+P)")
+        self.bt_imprimir.clicked.connect(self.print_filtered)
+        legend.addWidget(self.bt_imprimir)
         layout.addLayout(legend)
         root.addWidget(frame, 1)
 
-        self.txt_filter.textChanged.connect(self._apply_filter)
+        # digitando: espera uma pausa curta antes de filtrar (não refiltra a tabela a cada letra)
+        self._filtro_timer = QTimer(self, singleShot=True, interval=150)
+        self._filtro_timer.timeout.connect(self._apply_filter)
+        self.txt_filter.textChanged.connect(self._filtro_timer.start)
         self.cb_status.currentTextChanged.connect(self._apply_filter)
+        self.cb_coluna.currentIndexChanged.connect(self._apply_filter)
         self.setCentralWidget(central)
 
     def _legend_item(self, color: QColor, text: str) -> QWidget:
@@ -398,8 +424,13 @@ class MainWindow(QMainWindow):
                 return
 
     def _apply_filter(self) -> None:
-        self.table.proxy.set_text(self.txt_filter.text())
-        self.table.proxy.set_predicate(_FILTROS[self.cb_status.currentText()])
+        coluna = self.cb_coluna.currentData()
+        self.txt_filter.setPlaceholderText(
+            "Filtrar por material, código, setor, projeto…  (Ctrl+F)" if coluna is None
+            else f"Filtrar por {self.cb_coluna.currentText().lower()}…  (Ctrl+F)"
+        )
+        self._filtro_timer.stop()
+        self.table.proxy.set_filter(self.txt_filter.text(), coluna, _FILTROS[self.cb_status.currentText()])
         self._update_stats()
 
     def _update_stats(self) -> None:
@@ -410,6 +441,8 @@ class MainWindow(QMainWindow):
         self.st_free.set(sum(not r.reservado for r in rows))
         self.st_full.set(sum(r.chapa_inteira(st.max_width, st.max_height) for r in rows))
         self.lb_shown.setText(f"Exibindo {self.table.proxy.rowCount()} de {len(rows)}")
+        self.bt_imprimir.setEnabled(self.table.proxy.rowCount() > 0)
+        self.act_imprimir.setEnabled(self.table.proxy.rowCount() > 0)
         self._update_buttons()
 
     def _update_buttons(self, *_: object) -> None:
@@ -432,6 +465,10 @@ class MainWindow(QMainWindow):
         self.bt_release.setVisible(self.settings.allow_remove_reserve)
         self.bt_reserve.setEnabled(self.act_reserve.isEnabled())
         self.act_historico.setEnabled(r is not None)
+        self.act_transferir.setEnabled(bool(selecionados))
+        self.bt_transferir.setEnabled(bool(selecionados))
+        self.bt_transferir.setText(f"Transferir {len(selecionados)}…" if len(selecionados) > 1
+                                   else "Transferir setor…")
         self.bt_historico.setEnabled(r is not None)
         self.bt_reserve.setVisible(self.settings.allow_manual_reserve)  # sem permissão: nem aparece
         n = len(selecionados)
@@ -494,6 +531,64 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(
             f"{resultado.reservados} retalho(s) reservado(s) para {dlg.projeto.upper()}.", 8000
         )
+
+    def transfer_selected(self) -> None:
+        """Transferência de setor em lote: todos os retalhos selecionados vão para o mesmo setor."""
+        selecionados = self.table.selected_rows()
+        if not selecionados or not self.act_transferir.isEnabled():
+            return
+        dlg = TransferenciaDialog(selecionados, [r.setor for r in self.model.rows()], self)
+        if not dlg.exec():
+            return
+        try:
+            with busy():
+                total = self.service.transferir_setor(selecionados, dlg.setor)
+        except Exception as exc:  # noqa: BLE001
+            show_exception(self, "Transferir setor", exc)
+            self.reload()  # a lista pode estar desatualizada (ex.: outra máquina deu baixa)
+            return
+        self.reload()
+        ignorados = len(selecionados) - total
+        self.statusBar().showMessage(
+            f"{total} retalho(s) transferido(s) para o setor {dlg.setor}."
+            + (f" {ignorados} já estava(m) nesse setor." if ignorados else ""), 8000
+        )
+
+    def _descricao_filtro(self) -> str:
+        """Ex.: ``Setor contém "15" · Disponíveis · ordem: Material``, para o cabeçalho da impressão."""
+        partes = []
+        texto = self.txt_filter.text().strip()
+        if texto:
+            onde = "Qualquer coluna" if self.cb_coluna.currentData() is None else self.cb_coluna.currentText()
+            partes.append(f'{onde} contém "{texto}"')
+        partes.append(self.cb_status.currentText())
+        coluna = self.table.horizontalHeader().sortIndicatorSection()
+        if 0 <= coluna < len(self.model.columns) and self.table.proxy.sortColumn() >= 0:
+            partes.append(f"ordem: {self.model.columns[coluna].title}")
+        return "  ·  ".join(partes)
+
+    def print_filtered(self) -> None:
+        """PDF de conferência com exatamente o que está na tela (filtro e ordem), aberto para imprimir."""
+        self._apply_filter()  # aplica o que acabou de ser digitado, sem esperar a pausa
+        retalhos = self.table.visible_rows()
+        if not retalhos:
+            return
+        pasta = data_dir() / "conferencia"
+        for antigo in pasta.glob("CONFERENCIA_*.pdf"):  # não acumula: guarda só os últimos 30 dias
+            try:
+                if (datetime.now() - datetime.fromtimestamp(antigo.stat().st_mtime)).days > 30:
+                    antigo.unlink()
+            except OSError:
+                pass
+        destino = pasta / f"CONFERENCIA_{datetime.now():%Y%m%d_%H%M%S}.pdf"
+        try:
+            with busy():
+                arquivo = gerar_pdf_conferencia(retalhos, self._descricao_filtro(), self.settings.user, destino)
+            os.startfile(arquivo)  # noqa: S606 - Windows: abre no leitor de PDF para imprimir
+        except Exception as exc:  # noqa: BLE001
+            show_exception(self, "Imprimir conferência", exc)
+            return
+        self.statusBar().showMessage(f"Conferência com {len(retalhos)} retalho(s) aberta para impressão.", 8000)
 
     def release_selected(self) -> None:
         r = self.table.selected()

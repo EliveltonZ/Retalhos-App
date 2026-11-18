@@ -10,10 +10,11 @@ from .novo_retalho_dialog import NovoRetalhoDialog
 from .removidos_dialog import RemovidosDialog
 from .reserva_dialog import ReservaDialog
 from .reserva_manual_dialog import ReservaManualDialog
+from .transferencia_dialog import TransferenciaDialog
 from .usuarios_dialog import UsuariosDialog
 
 __all__ = [
     "BaixaDialog", "CadastroDialog", "ConfigDialog", "ConsumoDialog", "LeitorXmlDialog", "MateriaisDialog",
     "NovoRetalhoDialog", "ReservaDialog", "ReservaManualDialog", "LoginDialog", "PrimeiroAdminDialog",
-    "TrocarSenhaDialog", "UsuariosDialog", "HistoricoDialog", "RemovidosDialog",
+    "TrocarSenhaDialog", "UsuariosDialog", "HistoricoDialog", "RemovidosDialog", "TransferenciaDialog",
 ]

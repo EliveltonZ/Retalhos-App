@@ -31,6 +31,9 @@ ACAO_CANCELAMENTO = "CANCELAMENTO"
 ACAO_BAIXA = "BAIXA"
 ACAO_EXCLUSAO = "EXCLUSÃO"
 ACAO_RESTAURACAO = "RESTAURAÇÃO"
+ACAO_TRANSFERENCIA = "TRANSFERÊNCIA"
+
+SETOR_MAX = 20
 
 
 class RegraDeNegocioError(Exception):
@@ -183,6 +186,40 @@ class EstoqueService:
             RetalhoRepository(s).cancelar_reserva(retalho.id)
             self._historico(s, retalho.id, ACAO_LIBERACAO, self._texto_reserva(retalho))
             self.arquivos.adicionar(retalho.codigo, retalho.id, retalho.largura, retalho.altura)
+
+    def transferir_setor(self, retalhos: list[Retalho], destino: str) -> int:
+        """Muda o setor de vários retalhos de uma vez; cada um ganha TRANSFERÊNCIA no histórico.
+
+        Retorna quantos mudaram (os que já estavam no setor de destino são ignorados).
+        """
+        destino = destino.strip().upper()
+        if not destino:
+            raise RegraDeNegocioError("Informe o setor de destino.")
+        if len(destino) > SETOR_MAX:
+            raise RegraDeNegocioError(f"O setor deve ter no máximo {SETOR_MAX} caracteres.")
+        if not retalhos:
+            raise RegraDeNegocioError("Selecione ao menos um retalho.")
+        if not self.settings.user:
+            raise RegraDeNegocioError("É preciso estar logado para transferir.")
+        agora = self._agora()
+        total = 0
+        with self.db.session() as s:
+            repo = RetalhoRepository(s)
+            # confere todos antes de gravar: outra máquina pode ter dado baixa/excluído depois da tela carregar
+            atuais = []
+            for r in retalhos:
+                atual = repo.buscar(r.id)
+                if atual is None:
+                    raise RegraDeNegocioError(f"O retalho {r.id} não está mais no estoque. Atualize a lista.")
+                atuais.append(atual)
+            for atual in atuais:
+                if atual.setor.upper() == destino:
+                    continue
+                repo.mudar_setor(atual.id, destino)
+                self._historico(s, atual.id, ACAO_TRANSFERENCIA,
+                                f"setor {atual.setor or '(sem setor)'} → {destino}", agora)
+                total += 1
+        return total
 
     @staticmethod
     def _texto_reserva(r: Retalho) -> str:

@@ -12,6 +12,8 @@ from PySide6.QtCore import QEvent, QObject, Qt, Signal
 from PySide6.QtGui import QColor, QFont, QPalette
 from PySide6.QtWidgets import QApplication, QWidget
 
+from ..paths import resource_path
+
 THEME_LIGHT = "Claro"
 THEME_DARK = "Escuro"
 THEME_AUTO = "Automático"
@@ -56,6 +58,8 @@ class Palette:
     row_full_sheet: str
     row_inactive: str
     row_error: str
+    check_border: str  # contorno da caixa de seleção desmarcada
+    check_bg: str  # translúcido: a caixa assume a cor da linha (reservado, selecionado…)
 
 
 LIGHT = Palette(
@@ -66,6 +70,7 @@ LIGHT = Palette(
     danger_border="#f3b4b4", danger_hover="#fdecec", primary_disabled="#9db6ee",
     scrollbar="#c9d0db", scrollbar_hover="#aab3c2", ok="#16a34a", fail="#dc2626",
     row_reserved="#fff3bf", row_full_sheet="#ffd8b5", row_inactive="#e5e7eb", row_error="#fde2e2",
+    check_border="#9aa3b2", check_bg="rgba(255, 255, 255, 170)",
 )
 
 DARK = Palette(
@@ -76,6 +81,7 @@ DARK = Palette(
     danger_border="#7f2d2d", danger_hover="#3a1f22", primary_disabled="#2c3e66",
     scrollbar="#3a404c", scrollbar_hover="#4b5260", ok="#4ade80", fail="#f87171",
     row_reserved="#4a4016", row_full_sheet="#56331a", row_inactive="#30333a", row_error="#5a2428",
+    check_border="#8a93a5", check_bg="rgba(255, 255, 255, 16)",
 )
 
 # cores de linha das tabelas (atualizadas no lugar ao trocar o tema)
@@ -225,8 +231,26 @@ QTabBar::tab:selected {{ color: {PRIMARY}; border-bottom: 2px solid {PRIMARY}; }
 QTabBar::tab:hover:!selected {{ color: {p.text}; }}
 
 QSplitter::handle {{ background: transparent; }}
-QCheckBox::indicator {{ width: 16px; height: 16px; }}
+QCheckBox::indicator, QAbstractItemView::indicator {{
+    width: 14px; height: 14px; border: 1px solid {p.check_border}; border-radius: 4px; background: {p.check_bg};
+}}
+QCheckBox::indicator:hover, QAbstractItemView::indicator:hover {{ border-color: {PRIMARY}; }}
+QCheckBox::indicator:checked, QAbstractItemView::indicator:checked {{
+    background: {PRIMARY}; border-color: {PRIMARY}; image: url("{_icone("check.svg")}");
+}}
+QCheckBox::indicator:indeterminate, QAbstractItemView::indicator:indeterminate {{
+    background: {PRIMARY}; border-color: {PRIMARY}; image: url("{_icone("check_parcial.svg")}");
+}}
+QCheckBox::indicator:disabled, QAbstractItemView::indicator:disabled {{
+    background: {p.disabled_bg}; border-color: {p.border};
+}}
+QCheckBox:disabled {{ color: {p.disabled_text}; }}
 """
+
+
+def _icone(nome: str) -> str:
+    """Caminho de um ícone de ``resources`` no formato aceito pelo ``url()`` da folha de estilo."""
+    return resource_path(nome).as_posix()
 
 
 def _qpalette(p: Palette) -> QPalette:

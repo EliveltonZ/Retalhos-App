@@ -1,6 +1,6 @@
 ﻿; Instalador do Retalhos (Inno Setup 6).
 ; Gerado por ferramentas\gerar_instalador.bat, que compila os executáveis e passa a versão:
-;   ISCC /DAppVersion=2.0.0 instalador\Retalhos.iss   ->  dist\instalador\Retalhos_Setup_2.0.0.exe
+;   ISCC /DAppVersion=2.1.0 instalador\Retalhos.iss   ->  dist\instalador\Retalhos_Setup_2.1.0.exe
 ;
 ; - Instala por usuário em %LOCALAPPDATA%\Programs\Retalhos (sem pedir administrador), a mesma pasta
 ;   da versão anterior: o Update.exe consegue sobrescrever os arquivos e o Settings.json é gravável.

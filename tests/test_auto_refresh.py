@@ -47,6 +47,7 @@ def test_atualiza_mantendo_filtro_e_selecao(janela, settings):
     svc.lancar_retalho(20, 900, 400)
     janela.reload()
     janela.txt_filter.setText("BRANCO")
+    janela._apply_filter()  # sem esperar a pausa de digitação
     janela._select_id(a)
     assert janela.table.proxy.rowCount() == 1
 
@@ -87,3 +88,22 @@ def test_liga_e_desliga(janela, settings):
     janela.act_auto_refresh.setChecked(True)
     assert janela.refresh_timer.interval() == 180_000
     assert Settings.load(settings.path).auto_refresh_minutes == 3
+
+
+def test_filtro_espera_pausa_na_digitacao(janela, settings):
+    """Digitando, a tabela só é refiltrada depois de uma pausa curta (não a cada letra)."""
+    from PySide6.QtCore import QCoreApplication, QElapsedTimer
+
+    svc = EstoqueService(settings)
+    svc.lancar_retalho(10, 1000, 500)
+    svc.lancar_retalho(20, 900, 400)
+    janela.reload()
+    for parcial in ("B", "BR", "BRA"):
+        janela.txt_filter.setText(parcial)
+    assert janela.table.proxy.rowCount() == 2  # ainda digitando: nada filtrado
+    assert janela._filtro_timer.isActive()
+    relogio = QElapsedTimer()
+    relogio.start()
+    while janela._filtro_timer.isActive() and relogio.elapsed() < 2000:
+        QCoreApplication.processEvents()
+    assert janela.table.proxy.rowCount() == 1  # filtrou uma vez, com o texto final

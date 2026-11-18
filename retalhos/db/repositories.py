@@ -208,6 +208,9 @@ class RetalhoRepository:
             (retalho_id,),
         )
 
+    def mudar_setor(self, retalho_id: int, setor: str) -> None:
+        self.s.execute("UPDATE tblRetalhos SET Setor = ? WHERE id = ?", (setor, retalho_id))
+
     # ------------------------------------------------- removidos (baixa/exclusão)
     def _removido(self, row: tuple) -> RetalhoRemovido:
         n = len(self._CAMPOS.split(","))
